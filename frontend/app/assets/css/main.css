@@ -1,0 +1,49 @@
+:root {
+  --gkii-green-900: #123f32;
+  --gkii-green-700: #1f5a48;
+  --gkii-green-100: #e4efe9;
+
+  --gkii-gold-500: #b99555;
+  --gkii-gold-100: #f5eddc;
+
+  --gkii-cream: #f7f5ef;
+  --gkii-surface: #ffffff;
+  --gkii-text: #1d2924;
+  --gkii-muted: #68736e;
+  --gkii-border: #dfe5e1;
+
+  --gkii-font-display: Georgia, "Times New Roman", serif;
+  --gkii-font-body: Inter, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--gkii-cream);
+  color: var(--gkii-text);
+  font-family: var(--gkii-font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--gkii-font-display);
+}
+
+.btn-gkii-primary {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--gkii-green-900);
+  --bs-btn-border-color: var(--gkii-green-900);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--gkii-green-700);
+  --bs-btn-hover-border-color: var(--gkii-green-700);
+}
+
+.text-gkii-green {
+  color: var(--gkii-green-900);
+}
+
+.bg-gkii-green {
+  background-color: var(--gkii-green-900);
+}

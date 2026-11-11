@@ -1,0 +1,20 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build and development output
+dist/
+.output/
+.nuxt/
+.nitro/
+.cache/
+
+# Logs and local editor settings
+*.log
+.DS_Store
+.idea/
+.vscode/
