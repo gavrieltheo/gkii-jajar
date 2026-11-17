@@ -15,7 +15,18 @@ export function useApi() {
     )
   }
 
+  async function apiFetchRaw<T>(
+    path: string,
+    options: Parameters<typeof $fetch<T>>[1] = {}
+  ) {
+    return await $fetch<T>(
+      `${config.public.apiBase}${path}`,
+      options
+    )
+  }
+
   return {
-    apiFetch
+    apiFetch,
+    apiFetchRaw
   }
 }
