@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import { env } from './config/env.js';
 import { pool } from './database/pool.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { requireAdmin } from './middleware/auth.middleware.js';
@@ -25,15 +26,25 @@ import { laporanRouter } from './modules/laporan/laporan.routes.js';
 
 export const app = express();
 
+const allowedOrigins = env.frontendUrl
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Origin tidak diizinkan oleh konfigurasi CORS.'));
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
   })
-)
-
-app.use(express.json())
+);
 
 app.use(express.json());
 app.use('/api/auth', authRouter);

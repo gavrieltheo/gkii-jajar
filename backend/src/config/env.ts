@@ -26,5 +26,6 @@ export const env = {
   port: portValue(),
   databaseUrl: required('DATABASE_URL'),
   dbSsl: nodeProcess.env.DB_SSL === 'true',
-  jwtSecret: required('JWT_SECRET')
+  jwtSecret: required('JWT_SECRET'),
+  frontendUrl: nodeProcess.env.FRONTEND_URL ?? 'http://localhost:3000'
 };
