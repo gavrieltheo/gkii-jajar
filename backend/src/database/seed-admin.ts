@@ -2,50 +2,52 @@ import bcrypt from 'bcryptjs';
 import nodeProcess from 'node:process';
 import { pool } from './pool.js';
 
-function required(name: string): string {
-    const value = nodeProcess.env[name];
-
-    if (!value) {
-        throw new Error(`Environment variable ${name} wajib diisi.`);
-    }
-
-    return value;
-}
-
 async function seedAdmin(): Promise<void> {
-    const nama = required('ADMIN_NAME').trim();
-    const email = required('ADMIN_EMAIL').trim().toLowerCase();
-    const password = required('ADMIN_PASSWORD');
+  const nama = nodeProcess.env.ADMIN_NAME?.trim();
+  const email = nodeProcess.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = nodeProcess.env.ADMIN_PASSWORD;
 
-    if (password.length < 12) {
-        throw new Error('Password admin minimal 12 karaktr.');
-    }
+  if (!nama && !email && !password) {
+    console.log('Seed admin dilewati: ADMIN_NAME, ADMIN_EMAIL, dan ADMIN_PASSWORD belum diatur.');
+    return;
+  }
 
-    const existingAdmin = await pool.query(
-        'SELECT id_user FROM users WHERE LOWER(email) = LOWER($1)',
-        [email]
+  if (!nama || !email || !password) {
+    throw new Error(
+      'ADMIN_NAME, ADMIN_EMAIL, dan ADMIN_PASSWORD harus diisi seluruhnya.'
     );
+  }
 
-    if (existingAdmin.rowCount && existingAdmin.rowCount > 0) {
-        throw new Error('Email admin tersebut sudah terdaftar.');
-    }
+  if (password.length < 12) {
+    throw new Error('Password admin minimal 12 karakter.');
+  }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+  const existingAdmin = await pool.query(
+    'SELECT id_user FROM users WHERE LOWER(email) = LOWER($1)',
+    [email]
+  );
 
-    const result = await pool.query<{
-        id_user: number;
-        nama: string;
-        email: string;
-    }>(
-        `
+  if (existingAdmin.rowCount) {
+    console.log('Seed admin dilewati: email admin sudah terdaftar.');
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  const result = await pool.query<{
+    id_user: number;
+    nama: string;
+    email: string;
+  }>(
+    `
         INSERT INTO users (nama, email, password_hash)
         VALUES ($1, $2, $3)
         RETURNING id_user, nama, email
-        `,
-        [nama, email, passwordHash]
-    );
+    `,
+    [nama, email, passwordHash]
+  );
 
-    console.log('Admin berhasil dibuat:', result.rows[0]);
+  console.log('Admin berhasil dibuat:', result.rows[0]);
 }
 
 seedAdmin()
