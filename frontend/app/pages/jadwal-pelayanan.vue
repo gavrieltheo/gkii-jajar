@@ -7,6 +7,7 @@ type JadwalPelayanan = {
   tempat: string
   deskripsi: string | null
   status: string
+  polaPengulangan: 'SEKALI' | 'MINGGUAN'
 }
 
 const { apiFetch } = useApi()
@@ -94,6 +95,8 @@ useHead({
               <p class="schedule-date mb-3">
                 {{ formatTanggal(jadwal.tanggal) }}
               </p>
+
+              <p v-if="jadwal.polaPengulangan === 'MINGGUAN'" class="recurring-badge mb-3">Rutin setiap minggu</p>
 
               <h2 class="h3 schedule-title mb-3">
                 {{ jadwal.judul }}
@@ -183,6 +186,14 @@ useHead({
 .schedule-title {
   color: var(--gkii-green-900);
   font-family: var(--gkii-font-display);
+}
+
+.recurring-badge {
+  color: var(--gkii-green-900);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .placeholder-card {

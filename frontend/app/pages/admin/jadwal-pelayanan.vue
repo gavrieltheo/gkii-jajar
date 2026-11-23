@@ -1,5 +1,6 @@
 <script setup lang="ts">
 type StatusJadwal = 'TERJADWAL' | 'SELESAI' | 'DIBATALKAN'
+type PolaPengulangan = 'SEKALI' | 'MINGGUAN'
 
 type JadwalPelayanan = {
   idJadwal: number
@@ -9,6 +10,7 @@ type JadwalPelayanan = {
   tempat: string
   deskripsi: string | null
   status: StatusJadwal
+  polaPengulangan: PolaPengulangan
 }
 
 type FormJadwal = {
@@ -18,9 +20,15 @@ type FormJadwal = {
   tempat: string
   deskripsi: string
   status: StatusJadwal
+  polaPengulangan: PolaPengulangan
 }
 
 type NamaField = keyof FormJadwal
+
+const pilihanPola: { value: PolaPengulangan; label: string }[] = [
+  { value: 'SEKALI', label: 'Sekali (tanggal tertentu)' },
+  { value: 'MINGGUAN', label: 'Setiap minggu' }
+]
 
 const pilihanStatus: { value: StatusJadwal; label: string }[] = [
   { value: 'TERJADWAL', label: 'Terjadwal' },
@@ -41,7 +49,8 @@ const formAwal = (): FormJadwal => ({
   waktu: '',
   tempat: '',
   deskripsi: '',
-  status: 'TERJADWAL'
+  status: 'TERJADWAL',
+  polaPengulangan: 'SEKALI'
 })
 
 const form = reactive<FormJadwal>(formAwal())
@@ -51,7 +60,8 @@ const kesalahanForm = reactive<Record<NamaField, string>>({
   waktu: '',
   tempat: '',
   deskripsi: '',
-  status: ''
+  status: '',
+  polaPengulangan: ''
 })
 
 const formTerbuka = ref(false)
@@ -91,6 +101,10 @@ function formatWaktu(waktu: string) {
 
 function labelStatus(status: StatusJadwal) {
   return pilihanStatus.find((pilihan) => pilihan.value === status)?.label ?? status
+}
+
+function labelPola(pola: PolaPengulangan) {
+  return pilihanPola.find((pilihan) => pilihan.value === pola)?.label ?? pola
 }
 
 function kelasStatus(status: StatusJadwal) {
@@ -135,12 +149,17 @@ function validasiField(field: NamaField) {
     return false
   }
 
+  if (field === 'polaPengulangan' && !pilihanPola.some((item) => item.value === nilai)) {
+    kesalahanForm.polaPengulangan = 'Pilih pola jadwal yang valid.'
+    return false
+  }
+
   kesalahanForm[field] = ''
   return true
 }
 
 function validasiForm() {
-  const fields: NamaField[] = ['judul', 'tanggal', 'waktu', 'tempat', 'status']
+  const fields: NamaField[] = ['judul', 'tanggal', 'waktu', 'tempat', 'status', 'polaPengulangan']
 
   return fields.every((field) => validasiField(field))
 }
@@ -160,7 +179,8 @@ function bukaFormEdit(jadwal: JadwalPelayanan) {
     waktu: jadwal.waktu.slice(0, 5),
     tempat: jadwal.tempat,
     deskripsi: jadwal.deskripsi ?? '',
-    status: jadwal.status
+    status: jadwal.status,
+    polaPengulangan: jadwal.polaPengulangan
   })
 
   bersihkanKesalahan()
@@ -196,7 +216,8 @@ async function simpanJadwal() {
     waktu: form.waktu,
     tempat: form.tempat.trim(),
     deskripsi: form.deskripsi.trim() || null,
-    status: form.status
+    status: form.status,
+    polaPengulangan: form.polaPengulangan
   }
 
   try {
@@ -305,7 +326,7 @@ definePageMeta({
           <thead>
             <tr>
               <th scope="col">Jadwal</th>
-              <th scope="col">Tanggal & Waktu</th>
+              <th scope="col">Jadwal & Waktu</th>
               <th scope="col">Tempat</th>
               <th scope="col">Status</th>
               <th scope="col" class="text-end">Aksi</th>
@@ -319,7 +340,8 @@ definePageMeta({
                 <p v-if="jadwal.deskripsi" class="text-secondary small mb-0 text-truncate">{{ jadwal.deskripsi }}</p>
               </td>
               <td>
-                <p class="mb-1">{{ formatTanggal(jadwal.tanggal) }}</p>
+                <p class="mb-1">{{ jadwal.polaPengulangan === 'MINGGUAN' ? 'Setiap minggu' : formatTanggal(jadwal.tanggal) }}</p>
+                <p v-if="jadwal.polaPengulangan === 'MINGGUAN'" class="text-secondary small mb-1">Mulai {{ formatTanggal(jadwal.tanggal) }}</p>
                 <p class="text-secondary small mb-0">{{ formatWaktu(jadwal.waktu) }}</p>
               </td>
               <td>{{ jadwal.tempat }}</td>
@@ -366,9 +388,18 @@ definePageMeta({
             </div>
 
             <div class="col-md-6">
-              <label for="tanggal" class="form-label">Tanggal</label>
+              <label for="polaPengulangan" class="form-label">Pola jadwal</label>
+              <select id="polaPengulangan" v-model="form.polaPengulangan" class="form-select" :class="{ 'is-invalid': kesalahanForm.polaPengulangan }" aria-describedby="errorPolaPengulangan" @blur="validasiField('polaPengulangan')">
+                <option v-for="pilihan in pilihanPola" :key="pilihan.value" :value="pilihan.value">{{ pilihan.label }}</option>
+              </select>
+              <div id="errorPolaPengulangan" class="invalid-feedback">{{ kesalahanForm.polaPengulangan }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="tanggal" class="form-label">{{ form.polaPengulangan === 'MINGGUAN' ? 'Mulai berlaku pada' : 'Tanggal' }}</label>
               <input id="tanggal" v-model="form.tanggal" type="date" class="form-control" :class="{ 'is-invalid': kesalahanForm.tanggal }" aria-describedby="errorTanggal" @blur="validasiField('tanggal')">
               <div id="errorTanggal" class="invalid-feedback">{{ kesalahanForm.tanggal }}</div>
+              <p v-if="form.polaPengulangan === 'MINGGUAN'" class="form-text mb-0">Jadwal akan muncul setiap minggu pada hari yang sama dengan tanggal ini.</p>
             </div>
 
             <div class="col-md-6">

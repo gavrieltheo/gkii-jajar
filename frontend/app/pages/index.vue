@@ -27,6 +27,7 @@ type InformasiPublik = {
   gambar: string | null
   tanggalPublikasi: string
   status: string
+  polaPengulangan: 'SEKALI' | 'MINGGUAN'
 }
 
 const { apiFetch } = useApi()
@@ -142,6 +143,8 @@ function formatWaktu(waktu: string) {
                 <h2 class="h4 mb-3">
                   {{ jadwalTerdekat.judul }}
                 </h2>
+
+                <p v-if="jadwalTerdekat.polaPengulangan === 'MINGGUAN'" class="small text-gold fw-semibold text-uppercase">Rutin setiap minggu</p>
 
                 <dl class="mb-0 small">
                   <div

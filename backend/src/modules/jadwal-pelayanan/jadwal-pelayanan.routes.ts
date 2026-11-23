@@ -94,13 +94,18 @@ function readJadwalPelayananInput(body: unknown): JadwalPelayananInput {
     throw new Error('status wajib diisi.');
   }
 
+  if (data.polaPengulangan !== 'SEKALI' && data.polaPengulangan !== 'MINGGUAN') {
+    throw new Error('polaPengulangan harus bernilai SEKALI atau MINGGUAN.');
+  }
+
   return {
     judul: data.judul.trim(),
     tanggal: data.tanggal,
     waktu: data.waktu,
     tempat: data.tempat.trim(),
     deskripsi: optionalText(data.deskripsi, 'deskripsi'),
-    status: data.status.trim()
+    status: data.status.trim(),
+    polaPengulangan: data.polaPengulangan
   };
 }
 

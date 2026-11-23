@@ -8,6 +8,7 @@ export type JadwalPelayanan = {
   tempat: string;
   deskripsi: string | null;
   status: string;
+  polaPengulangan: 'SEKALI' | 'MINGGUAN';
   createdAt: Date;
   updatedAt: Date;
 };
@@ -19,6 +20,7 @@ export type JadwalPelayananInput = {
   tempat: string;
   deskripsi: string | null;
   status: string;
+  polaPengulangan: 'SEKALI' | 'MINGGUAN';
 };
 
 export async function getAllJadwalPelayanan(
@@ -34,6 +36,7 @@ export async function getAllJadwalPelayanan(
         tempat,
         deskripsi,
         status,
+        pola_pengulangan AS "polaPengulangan",
         created_at AS "createdAt",
         updated_at AS "updatedAt"
       FROM jadwal_pelayanan
@@ -59,6 +62,7 @@ export async function getJadwalPelayananById(
         tempat,
         deskripsi,
         status,
+        pola_pengulangan AS "polaPengulangan",
         created_at AS "createdAt",
         updated_at AS "updatedAt"
       FROM jadwal_pelayanan
@@ -81,9 +85,10 @@ export async function createJadwalPelayanan(
         waktu,
         tempat,
         deskripsi,
-        status
+        status,
+        pola_pengulangan
       )
-      VALUES ($1, $2, $3, $4, $5, $6)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING
         id_jadwal AS "idJadwal",
         judul,
@@ -92,6 +97,7 @@ export async function createJadwalPelayanan(
         tempat,
         deskripsi,
         status,
+        pola_pengulangan AS "polaPengulangan",
         created_at AS "createdAt",
         updated_at AS "updatedAt"
     `,
@@ -101,7 +107,8 @@ export async function createJadwalPelayanan(
       input.waktu,
       input.tempat,
       input.deskripsi,
-      input.status
+      input.status,
+      input.polaPengulangan
     ]
   );
 
@@ -122,6 +129,7 @@ export async function updateJadwalPelayanan(
         tempat = $5,
         deskripsi = $6,
         status = $7,
+        pola_pengulangan = $8,
         updated_at = CURRENT_TIMESTAMP
       WHERE id_jadwal = $1
       RETURNING
@@ -132,6 +140,7 @@ export async function updateJadwalPelayanan(
         tempat,
         deskripsi,
         status,
+        pola_pengulangan AS "polaPengulangan",
         created_at AS "createdAt",
         updated_at AS "updatedAt"
     `,
@@ -142,7 +151,8 @@ export async function updateJadwalPelayanan(
       input.waktu,
       input.tempat,
       input.deskripsi,
-      input.status
+      input.status,
+      input.polaPengulangan
     ]
   );
 
@@ -168,18 +178,43 @@ export async function getJadwalPelayananPublik(
       SELECT
         id_jadwal AS "idJadwal",
         judul,
-        TO_CHAR(tanggal, 'YYYY-MM-DD') AS tanggal,
+        TO_CHAR(
+          CASE
+            WHEN pola_pengulangan = 'MINGGUAN' THEN GREATEST(
+              tanggal,
+              CURRENT_DATE + MOD(
+                EXTRACT(DOW FROM tanggal)::INTEGER - EXTRACT(DOW FROM CURRENT_DATE)::INTEGER + 7,
+                7
+              )
+            )
+            ELSE tanggal
+          END,
+          'YYYY-MM-DD'
+        ) AS tanggal,
         TO_CHAR(waktu, 'HH24:MI:SS') AS waktu,
         tempat,
         deskripsi,
         status,
+        pola_pengulangan AS "polaPengulangan",
         created_at AS "createdAt",
         updated_at AS "updatedAt"
       FROM jadwal_pelayanan
       WHERE
         status = 'TERJADWAL'
+        AND (pola_pengulangan = 'MINGGUAN' OR tanggal >= CURRENT_DATE)
         AND judul ILIKE $1
-      ORDER BY tanggal ASC, waktu ASC
+      ORDER BY
+        CASE
+          WHEN pola_pengulangan = 'MINGGUAN' THEN GREATEST(
+            tanggal,
+            CURRENT_DATE + MOD(
+              EXTRACT(DOW FROM tanggal)::INTEGER - EXTRACT(DOW FROM CURRENT_DATE)::INTEGER + 7,
+              7
+            )
+          )
+          ELSE tanggal
+        END ASC,
+        waktu ASC
     `,
     [`%${search.trim()}%`]
   );
