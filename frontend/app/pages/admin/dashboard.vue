@@ -328,7 +328,7 @@ definePageMeta({
 <style scoped>
 .page-label,
 .stat-label {
-  color: var(--gkii-gold-500);
+  color: var(--site-rust);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -340,28 +340,27 @@ definePageMeta({
 .error-state {
   background: var(--gkii-surface);
   border: 1px solid var(--gkii-border);
-  box-shadow: 0 0.5rem 1.5rem rgb(18 63 50 / 6%);
 }
 
 .stat-card {
-  border-top: 3px solid var(--gkii-gold-500);
+  border-left: 3px solid var(--site-green);
 }
 
 .stat-value {
-  color: var(--gkii-green-900);
+  color: var(--site-ink);
   font-size: 2.25rem;
   font-weight: 700;
   line-height: 1;
 }
 
 .finance-card {
-  background: var(--gkii-green-900);
+  background: var(--site-green);
   color: white;
 }
 
 .balance-card {
-  background: var(--gkii-gold-100);
-  border-left: 4px solid var(--gkii-gold-500);
+  background: var(--site-paper-deep);
+  border-left: 4px solid var(--site-rust);
 }
 
 .finance-value {
@@ -382,7 +381,7 @@ definePageMeta({
 }
 
 .card-link {
-  color: var(--gkii-green-900);
+  color: var(--site-green);
   font-size: 0.875rem;
   font-weight: 700;
   text-decoration: none;
@@ -406,4 +405,3 @@ definePageMeta({
   background-color: var(--gkii-green-100);
 }
 </style>
-    

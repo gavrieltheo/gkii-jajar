@@ -44,9 +44,7 @@ async function logout() {
           @click="tutupSidebar"
         >
           <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M12 3v18M3 12h18" />
-            </svg>
+            <img src="/images/gkii-logo.png" alt="" class="brand-logo">
           </span>
 
           <span>
@@ -253,18 +251,16 @@ async function logout() {
 
 .brand-mark {
   align-items: center;
-  background: white;
-  color: var(--gkii-green-900);
   display: inline-flex;
-  height: 2.9rem;
+  height: 3rem;
   justify-content: center;
-  width: 2.9rem;
+  width: 3rem;
 }
 
-.brand-mark svg {
-  height: 1.4rem;
-  stroke-width: 2;
-  width: 1.4rem;
+.brand-logo {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
 }
 
 .sidebar-nav {

@@ -76,9 +76,7 @@ definePageMeta({
               class="brand-link d-inline-block mb-4 text-decoration-none"
             >
               <span class="brand-mark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M12 4v16M4 12h16" />
-                </svg>
+                <img src="/images/gkii-logo.png" alt="" class="brand-logo">
               </span>
 
               <span>
@@ -170,8 +168,8 @@ definePageMeta({
 
 .login-card {
   background: var(--gkii-surface);
-  border-top: 4px solid var(--gkii-gold-500);
-  box-shadow: 0 1.25rem 3rem rgb(18 63 50 / 12%);
+  border-top: 3px solid var(--site-rust);
+  box-shadow: 0 1rem 2.5rem rgb(24 33 38 / 10%);
 }
 
 .brand-link {
@@ -189,22 +187,20 @@ definePageMeta({
 
 .brand-mark {
   align-items: center;
-  background: var(--gkii-green-900);
-  color: var(--gkii-gold-500);
   display: inline-flex;
   height: 2.75rem;
   justify-content: center;
   width: 2.75rem;
 }
 
-.brand-mark svg {
-  height: 1.3rem;
-  stroke-width: 2;
-  width: 1.3rem;
+.brand-logo {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
 }
 
 .page-label {
-  color: var(--gkii-gold-500);
+  color: var(--site-rust);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -215,12 +211,12 @@ definePageMeta({
 }
 
 .form-control:focus {
-  border-color: var(--gkii-gold-500);
-  box-shadow: 0 0 0 0.2rem rgb(185 149 85 / 20%);
+  border-color: var(--site-green);
+  box-shadow: 0 0 0 0.2rem rgb(47 93 80 / 20%);
 }
 
 .back-link {
-  color: var(--gkii-green-900);
+  color: var(--site-green);
   font-weight: 600;
   text-decoration: none;
 }

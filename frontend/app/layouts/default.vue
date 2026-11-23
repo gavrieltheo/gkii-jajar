@@ -22,9 +22,12 @@ function tutupMenu() {
           class="brand-link text-decoration-none text-gkii-green"
           @click="tutupMenu"
         >
-          <span class="brand-mark">GKII</span>
-          <span class="brand-place d-block">
-            Jajar Solo
+          <span class="brand-lockup">
+            <img src="/images/gkii-logo.png" alt="" class="brand-logo">
+            <span>
+              <span class="brand-mark">GKII</span>
+              <span class="brand-place d-block">Jajar Solo</span>
+            </span>
           </span>
         </NuxtLink>
 
@@ -192,6 +195,18 @@ function tutupMenu() {
 
 .brand-link {
   line-height: 1;
+}
+
+.brand-lockup {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.65rem;
+}
+
+.brand-logo {
+  height: 2.65rem;
+  object-fit: contain;
+  width: 2.65rem;
 }
 
 .brand-mark {
