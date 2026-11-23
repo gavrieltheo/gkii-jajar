@@ -148,9 +148,7 @@ useHead({
 </template>
 
 <style scoped>
-.page-hero {
-  border-bottom: 4px solid var(--gkii-gold-500);
-}
+.page-hero { border-bottom: 0; padding: 1rem 0; }
 
 .page-label,
 .section-label,
@@ -174,17 +172,16 @@ useHead({
 .value-card {
   background: var(--gkii-surface);
   border: 1px solid var(--gkii-border);
-  border-top: 4px solid var(--gkii-gold-500);
-  box-shadow: 0 0.75rem 2rem rgb(18 63 50 / 8%);
+  border-top: 3px solid var(--gkii-gold-500);
 }
 
 .value-card h3 {
-  color: var(--gkii-green-900);
+  color: var(--gkii-navy-900);
   font-family: var(--gkii-font-display);
 }
 
 .contact-panel {
-  background: var(--gkii-green-900);
+  background: var(--gkii-navy-900);
   color: white;
   border-left: 4px solid var(--gkii-gold-500);
 }

@@ -144,9 +144,7 @@ useHead({
 </template>
 
 <style scoped>
-.page-hero {
-  border-bottom: 4px solid var(--gkii-gold-500);
-}
+.page-hero { border-bottom: 0; padding: 1rem 0; }
 
 .page-label {
   color: var(--gkii-gold-500);
@@ -164,19 +162,19 @@ useHead({
 .information-card {
   background: var(--gkii-surface);
   border: 1px solid var(--gkii-border);
-  border-top: 4px solid var(--gkii-gold-500);
-  box-shadow: 0 0.75rem 2rem rgb(18 63 50 / 8%);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  border-top: 3px solid var(--gkii-gold-500);
+  transition: border-color 180ms ease, transform 180ms ease;
 }
 
 .information-card:hover {
-  box-shadow: 0 1.25rem 2.5rem rgb(18 63 50 / 14%);
-  transform: translateY(-4px);
+  border-color: var(--gkii-navy-700);
+  transform: translateY(-2px);
 }
 
 .category-badge {
-  background: var(--gkii-gold-100);
-  color: var(--gkii-green-900);
+  background: transparent;
+  border: 1px solid var(--gkii-border);
+  color: var(--gkii-navy-900);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -191,7 +189,7 @@ useHead({
 }
 
 .information-title {
-  color: var(--gkii-green-900);
+  color: var(--gkii-navy-900);
   font-family: var(--gkii-font-display);
 }
 

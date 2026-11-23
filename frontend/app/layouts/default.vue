@@ -12,18 +12,18 @@ function tutupMenu() {
       Lewati ke konten utama
     </a>
 
-    <header class="border-bottom bg-white">
+    <header class="site-header bg-white">
       <nav
         class="container d-flex align-items-center justify-content-between gap-3 py-3"
         aria-label="Navigasi utama"
       >
         <NuxtLink
           to="/"
-          class="brand-link text-decoration-none text-gkii-green fw-bold fs-4"
+          class="brand-link text-decoration-none text-gkii-green"
           @click="tutupMenu"
         >
-          GKII
-          <span class="d-block small fw-normal text-uppercase">
+          <span class="brand-mark">GKII</span>
+          <span class="brand-place d-block">
             Jajar Solo
           </span>
         </NuxtLink>
@@ -154,12 +154,21 @@ function tutupMenu() {
       <slot />
     </main>
 
-    <footer id="kontak" class="bg-dark text-white">
-      <div class="container py-4">
-        <p class="mb-1 fw-semibold">GKII Jajar Solo</p>
-        <p class="mb-0 text-white-50">
-          Sistem Informasi Manajemen Gereja
-        </p>
+    <footer id="kontak" class="site-footer text-white">
+      <div class="container py-5">
+        <div class="row align-items-end g-4">
+          <div class="col-md-7">
+            <p class="public-eyebrow text-white-50 mb-3">GKII Jajar Solo</p>
+            <p class="footer-title mb-2">Bertumbuh dalam iman, melayani dengan kasih.</p>
+            <p class="mb-0 footer-copy">
+              Informasi ibadah, kegiatan, dan pelayanan untuk keluarga GKII Jajar Solo.
+            </p>
+          </div>
+          <div class="col-md-5 text-md-end">
+            <NuxtLink to="/profil-gereja" class="footer-link">Profil Gereja</NuxtLink>
+            <NuxtLink to="/jadwal-pelayanan" class="footer-link">Jadwal Pelayanan</NuxtLink>
+          </div>
+        </div>
       </div>
     </footer>
   </div>
@@ -185,6 +194,24 @@ function tutupMenu() {
   line-height: 1;
 }
 
+.brand-mark {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.07em;
+}
+
+.brand-place {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--gkii-border);
+}
+
 .nav-link,
 .mobile-nav-link {
   color: var(--gkii-text);
@@ -193,6 +220,7 @@ function tutupMenu() {
 }
 
 .nav-link {
+  font-size: 0.93rem;
   padding: 0.5rem 0;
   position: relative;
 }
@@ -201,7 +229,7 @@ function tutupMenu() {
 .nav-link.router-link-active,
 .mobile-nav-link:hover,
 .mobile-nav-link.router-link-active {
-  color: var(--gkii-green-900);
+  color: var(--gkii-navy-900);
 }
 
 .nav-link.router-link-active::after {
@@ -218,7 +246,7 @@ function tutupMenu() {
   align-items: center;
   background: transparent;
   border: 1px solid var(--gkii-border);
-  color: var(--gkii-green-900);
+  color: var(--gkii-navy-900);
   display: inline-flex;
   height: 44px;
   justify-content: center;
@@ -240,6 +268,36 @@ function tutupMenu() {
   padding: 0.9rem 0;
 }
 
+.site-footer {
+  background: var(--gkii-navy-900);
+}
+
+.footer-title {
+  font-family: var(--gkii-font-display);
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  line-height: 1.15;
+  max-width: 30rem;
+}
+
+.footer-copy {
+  color: #d9dfef;
+  max-width: 35rem;
+}
+
+.footer-link {
+  color: white;
+  display: inline-block;
+  font-size: 0.9rem;
+  margin-left: 1.25rem;
+  text-decoration-color: rgb(255 255 255 / 45%);
+  text-underline-offset: 0.25rem;
+}
+
+.footer-link:hover {
+  color: #fff;
+  text-decoration-thickness: 2px;
+}
+
 .menu-toggle:focus-visible,
 .nav-link:focus-visible,
 .mobile-nav-link:focus-visible,
@@ -251,6 +309,12 @@ function tutupMenu() {
 @media (prefers-reduced-motion: reduce) {
   .skip-link {
     transition: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .footer-link {
+    margin: 1rem 1.25rem 0 0;
   }
 }
 </style>

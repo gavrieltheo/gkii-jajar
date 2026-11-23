@@ -125,9 +125,7 @@ useHead({
 </template>
 
 <style scoped>
-.page-hero {
-  border-bottom: 4px solid var(--gkii-gold-500);
-}
+.page-hero { border-bottom: 0; padding: 1rem 0; }
 
 .page-label {
   color: var(--gkii-gold-500);
@@ -139,12 +137,12 @@ useHead({
 .activity-card {
   background-color: var(--gkii-surface);
   border-color: var(--gkii-border) !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 180ms ease, border-color 180ms ease;
 }
 
 .activity-card:hover {
-  box-shadow: 0 1rem 2rem rgb(0 0 0 / 8%);
-  transform: translateY(-4px);
+  border-color: var(--gkii-navy-700) !important;
+  transform: translateY(-2px);
 }
 
 .activity-image,
@@ -155,6 +153,6 @@ useHead({
 }
 
 .activity-placeholder {
-  background-color: var(--gkii-green-700);
+  background-color: var(--gkii-navy-900);
 }
 </style>

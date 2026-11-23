@@ -1,25 +1,33 @@
 :root {
-  --gkii-green-900: #123f32;
-  --gkii-green-700: #1f5a48;
-  --gkii-green-100: #e4efe9;
+  --gkii-navy-900: #14245f;
+  --gkii-navy-700: #24377c;
+  --gkii-green-900: #1d5b35;
+  --gkii-green-700: #2d7546;
+  --gkii-green-100: #eaf3ec;
 
-  --gkii-gold-500: #b99555;
-  --gkii-gold-100: #f5eddc;
+  --gkii-gold-500: #a97f20;
+  --gkii-gold-100: #f7f0df;
+  --gkii-red-700: #a62b25;
 
-  --gkii-cream: #f7f5ef;
+  --gkii-cream: #fafaf7;
   --gkii-surface: #ffffff;
-  --gkii-text: #1d2924;
-  --gkii-muted: #68736e;
-  --gkii-border: #dfe5e1;
+  --gkii-text: #172033;
+  --gkii-muted: #5b6577;
+  --gkii-border: #dce1e8;
 
   --gkii-font-display: Georgia, "Times New Roman", serif;
-  --gkii-font-body: Inter, Arial, sans-serif;
+  --gkii-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: var(--gkii-cream);
   color: var(--gkii-text);
   font-family: var(--gkii-font-body);
+  line-height: 1.6;
 }
 
 h1,
@@ -29,21 +37,69 @@ h4,
 h5,
 h6 {
   font-family: var(--gkii-font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--gkii-gold-500);
+  outline-offset: 3px;
 }
 
 .btn-gkii-primary {
   --bs-btn-color: #ffffff;
-  --bs-btn-bg: var(--gkii-green-900);
-  --bs-btn-border-color: var(--gkii-green-900);
+  --bs-btn-bg: var(--gkii-navy-900);
+  --bs-btn-border-color: var(--gkii-navy-900);
   --bs-btn-hover-color: #ffffff;
-  --bs-btn-hover-bg: var(--gkii-green-700);
-  --bs-btn-hover-border-color: var(--gkii-green-700);
+  --bs-btn-hover-bg: var(--gkii-navy-700);
+  --bs-btn-hover-border-color: var(--gkii-navy-700);
+  --bs-btn-active-bg: #0d1946;
+  --bs-btn-active-border-color: #0d1946;
+  border-radius: 0.25rem;
+  font-weight: 650;
+  padding: 0.65rem 1rem;
 }
 
 .text-gkii-green {
-  color: var(--gkii-green-900);
+  color: var(--gkii-navy-900);
 }
 
 .bg-gkii-green {
-  background-color: var(--gkii-green-900);
+  background-color: var(--gkii-navy-900);
+}
+
+.bg-gkii-cream {
+  background-color: var(--gkii-cream);
+}
+
+.public-eyebrow {
+  color: var(--gkii-gold-500);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.public-page-hero {
+  background: var(--gkii-navy-900);
+  color: #fff;
+  padding: clamp(3.5rem, 8vw, 6.25rem) 0;
+}
+
+.public-page-hero h1 {
+  font-size: clamp(2.35rem, 5vw, 4.5rem);
+  line-height: 1.04;
+  max-width: 15ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
