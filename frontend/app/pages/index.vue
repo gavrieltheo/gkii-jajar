@@ -1,57 +1,240 @@
 <script setup lang="ts">
-type JadwalPelayanan = { idJadwal: number; judul: string; tanggal: string; waktu: string; tempat: string; polaPengulangan: 'SEKALI' | 'MINGGUAN' }
-type Kegiatan = { idKegiatan: number; judul: string; tanggal: string; waktu: string; tempat: string; deskripsi: string | null; gambar: string | null }
-type InformasiPublik = { idInformasi: number; judul: string; kategori: string; konten: string; tanggalPublikasi: string }
+type JadwalPelayanan = {
+  idJadwal: number
+  judul: string
+  tanggal: string
+  waktu: string
+  tempat: string
+  deskripsi: string | null
+  polaPengulangan: 'SEKALI' | 'MINGGUAN'
+}
+
+type Kegiatan = {
+  idKegiatan: number
+  judul: string
+  tanggal: string
+  waktu: string
+  tempat: string
+  deskripsi: string | null
+  gambar: string | null
+}
+
+type InformasiPublik = {
+  idInformasi: number
+  judul: string
+  kategori: string
+  konten: string
+  tanggalPublikasi: string
+}
+
+// Ganti seluruh nilai [ISI: ...] ini saat data gereja sudah tersedia.
+const gereja = {
+  alamat: '[ISI: alamat lengkap GKII Jajar Solo]',
+  mapsUrl: '',
+  petunjukDatang: '[ISI: patokan, akses masuk, dan informasi parkir]',
+  whatsapp: '',
+  instagram: '',
+  email: '',
+  kalimatKhas: '[ISI: satu kalimat khas tentang GKII Jajar Solo]',
+  fotoUtama: ''
+}
 
 const { apiFetch } = useApi()
-const { data: daftarJadwal, pending, error } = await useAsyncData('jadwal-pelayanan-terdekat', async () => (await apiFetch<JadwalPelayanan[]>('/public/jadwal-pelayanan')).data)
-const { data: daftarKegiatan, pending: kegiatanPending, error: kegiatanError } = await useAsyncData('kegiatan-publik', async () => (await apiFetch<Kegiatan[]>('/public/kegiatan')).data)
-const { data: daftarInformasi, pending: informasiPending, error: informasiError } = await useAsyncData('informasi-publik', async () => (await apiFetch<InformasiPublik[]>('/public/informasi')).data)
+
+const { data: daftarJadwal, pending: jadwalPending } = await useAsyncData(
+  'jadwal-pelayanan-terdekat',
+  async () => (await apiFetch<JadwalPelayanan[]>('/public/jadwal-pelayanan')).data
+)
+
+const { data: daftarKegiatan } = await useAsyncData(
+  'kegiatan-publik',
+  async () => (await apiFetch<Kegiatan[]>('/public/kegiatan')).data
+)
+
+const { data: daftarInformasi } = await useAsyncData(
+  'informasi-publik',
+  async () => (await apiFetch<InformasiPublik[]>('/public/informasi')).data
+)
+
 const jadwalTerdekat = computed(() => daftarJadwal.value?.[0] ?? null)
+const jadwalMingguan = computed(() => daftarJadwal.value?.filter((jadwal) => jadwal.polaPengulangan === 'MINGGUAN') ?? [])
 const kegiatanUnggulan = computed(() => daftarKegiatan.value?.slice(0, 3) ?? [])
 const informasiTerbaru = computed(() => daftarInformasi.value?.slice(0, 3) ?? [])
-const formatTanggal = (tanggal: string) => new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(tanggal))
-const formatWaktu = (waktu: string) => waktu.slice(0, 5)
+
+function formatTanggal(tanggal: string) {
+  return new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(new Date(tanggal))
+}
+
+function formatHari(tanggal: string) {
+  return new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(new Date(tanggal))
+}
+
+function formatWaktu(waktu: string) {
+  return `${waktu.slice(0, 5)} WIB`
+}
+
+useHead({ title: 'GKII Jajar Solo' })
 </script>
 
 <template>
-  <div>
-    <section id="beranda" class="hero-section">
-      <div class="container"><div class="row align-items-end g-5">
-        <div class="col-lg-7">
-          <p class="public-eyebrow mb-3">Gereja Kemah Injil Indonesia</p>
-          <h1>Ruang untuk bertumbuh, bersekutu, dan melayani.</h1>
-          <p class="hero-copy mb-4">GKII Jajar Solo adalah komunitas yang berakar dalam firman dan hadir bagi sesama di kota Solo.</p>
-          <div class="d-flex flex-wrap gap-3"><NuxtLink to="/jadwal-pelayanan" class="btn btn-gkii-primary btn-lg">Jadwal ibadah</NuxtLink><NuxtLink to="/profil-gereja" class="btn btn-outline-gkii btn-lg">Mengenal kami</NuxtLink></div>
+  <div class="homepage">
+    <section id="beranda" class="arrival-hero">
+      <div class="container">
+        <div class="hero-layout">
+          <div class="hero-copy-wrap">
+            <p class="kicker">GKII Jajar Solo</p>
+            <h1>
+              {{ gereja.kalimatKhas }}
+            </h1>
+            <p class="hero-intro">
+              Datang beribadah, berjumpa dengan komunitas, dan temukan ruang untuk melayani bersama.
+            </p>
+          </div>
+
+          <article class="next-worship" aria-labelledby="judul-ibadah-terdekat">
+            <p class="kicker">Ibadah terdekat</p>
+            <template v-if="jadwalPending">
+              <h2 id="judul-ibadah-terdekat">Memuat jadwal ibadah...</h2>
+            </template>
+            <template v-else-if="jadwalTerdekat">
+              <p class="worship-day">{{ formatHari(jadwalTerdekat.tanggal) }}</p>
+              <h2 id="judul-ibadah-terdekat">{{ jadwalTerdekat.judul }}</h2>
+              <p class="worship-time">{{ formatWaktu(jadwalTerdekat.waktu) }}</p>
+              <p class="worship-place">{{ jadwalTerdekat.tempat }}</p>
+            </template>
+            <template v-else>
+              <h2 id="judul-ibadah-terdekat">Jadwal ibadah sedang diperbarui</h2>
+              <p class="worship-place">Silakan hubungi gereja untuk jadwal minggu ini.</p>
+            </template>
+            <div class="hero-actions">
+              <a
+                v-if="gereja.mapsUrl"
+                :href="gereja.mapsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-light"
+              >
+                Buka peta
+              </a>
+              <span v-else class="btn btn-light disabled" aria-disabled="true">Buka peta [ISI]</span>
+              <a href="#datang-pertama" class="text-action">Panduan datang pertama kali</a>
+            </div>
+          </article>
         </div>
-        <div id="jadwal" class="col-lg-5">
-          <article v-if="pending" class="next-service p-4 p-lg-5" aria-live="polite"><p class="public-eyebrow mb-2">Jadwal terdekat</p><p class="mb-0 text-secondary">Memuat jadwal pelayanan...</p></article>
-          <article v-else-if="jadwalTerdekat" class="next-service p-4 p-lg-5"><p class="public-eyebrow mb-2">Jadwal terdekat</p><h2 class="next-service-title mb-3">{{ jadwalTerdekat.judul }}</h2><p v-if="jadwalTerdekat.polaPengulangan === 'MINGGUAN'" class="recurring-note">Rutin setiap minggu</p><dl class="service-details mb-0"><div><dt>Tanggal</dt><dd>{{ formatTanggal(jadwalTerdekat.tanggal) }}</dd></div><div><dt>Waktu</dt><dd>{{ formatWaktu(jadwalTerdekat.waktu) }} WIB</dd></div><div><dt>Tempat</dt><dd>{{ jadwalTerdekat.tempat }}</dd></div></dl></article>
-          <article v-else class="next-service p-4 p-lg-5"><p class="public-eyebrow mb-2">Jadwal terdekat</p><h2 class="next-service-title h3 mb-2">Belum ada jadwal pelayanan</h2><p class="mb-0 text-secondary">{{ error ? 'Jadwal belum dapat dimuat.' : 'Silakan kembali lagi nanti.' }}</p></article>
-        </div>
-      </div></div>
+      </div>
     </section>
 
-    <section id="tentang" class="intro-section bg-white"><div class="container"><div class="row justify-content-between g-4"><div class="col-lg-4"><p class="public-eyebrow mb-3">Tentang kami</p></div><div class="col-lg-7"><h2 class="intro-title">Gereja yang bertumbuh bersama, bukan sekadar tempat berkumpul.</h2><p class="intro-copy mb-4">Kami rindu menjadi rumah yang terbuka untuk beribadah, membangun relasi, dan mengambil bagian dalam pelayanan yang membawa kebaikan.</p><NuxtLink to="/profil-gereja" class="link-gkii">Profil GKII Jajar Solo <span aria-hidden="true">→</span></NuxtLink></div></div></div></section>
+    <section id="datang-pertama" class="first-visit section-space bg-white">
+      <div class="container">
+        <div class="row g-5 align-items-start">
+          <div class="col-lg-5">
+            <p class="kicker">Pertama kali datang?</p>
+            <h2 class="display-heading">Kami ingin kamu datang dengan tenang.</h2>
+            <p class="section-copy">Berikut hal praktis yang perlu kamu ketahui sebelum datang ke ibadah di GKII Jajar Solo.</p>
+          </div>
+          <div class="col-lg-7">
+            <ol class="visit-steps">
+              <li>
+                <strong>Datang 15 menit lebih awal</strong>
+                <span>[ISI: titik parkir, pintu masuk, atau patokan gedung]</span>
+              </li>
+              <li>
+                <strong>Sapa tim penyambut</strong>
+                <span>[ISI: informasi registrasi tamu atau cara memperoleh bantuan]</span>
+              </li>
+              <li>
+                <strong>Ibadah dan pelayanan anak</strong>
+                <span>[ISI: ketersediaan sekolah minggu, ruang ibu-anak, atau kebutuhan khusus]</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <section id="kegiatan" class="content-section bg-gkii-cream"><div class="container"><div class="row justify-content-between align-items-end g-3 mb-5"><div class="col-lg-6"><p class="public-eyebrow">Kegiatan gereja</p><h2 class="section-title mb-0">Berjumpa dalam kehidupan sehari-hari.</h2></div><div class="col-lg-auto"><NuxtLink to="/kegiatan" class="link-gkii">Semua kegiatan <span aria-hidden="true">→</span></NuxtLink></div></div><div v-if="kegiatanPending" class="text-secondary">Memuat kegiatan gereja...</div><div v-else-if="kegiatanUnggulan.length" class="row g-4"><div v-for="kegiatan in kegiatanUnggulan" :key="kegiatan.idKegiatan" class="col-md-6 col-lg-4"><article class="activity-card h-100"><img v-if="kegiatan.gambar" :src="kegiatan.gambar" :alt="kegiatan.judul" class="activity-image" loading="lazy"><div v-else class="activity-placeholder d-flex align-items-end p-4"><p class="mb-0 text-white fw-semibold">GKII Jajar Solo</p></div><div class="p-4"><p class="public-eyebrow mb-2">{{ formatTanggal(kegiatan.tanggal) }}</p><h3 class="h4 mb-3">{{ kegiatan.judul }}</h3><p class="text-secondary mb-3">{{ kegiatan.deskripsi ?? 'Informasi kegiatan GKII Jajar Solo.' }}</p><p class="small text-secondary mb-0">{{ formatWaktu(kegiatan.waktu) }} WIB · {{ kegiatan.tempat }}</p></div></article></div></div><div v-else class="text-secondary">{{ kegiatanError ? 'Kegiatan belum dapat dimuat.' : 'Belum ada kegiatan yang akan ditampilkan.' }}</div></div></section>
+    <section id="jadwal" class="weekly-schedule section-space">
+      <div class="container">
+        <div class="schedule-heading">
+          <div>
+            <p class="kicker">Jadwal mingguan</p>
+            <h2 class="display-heading">Waktu untuk hadir bersama.</h2>
+          </div>
+          <NuxtLink to="/jadwal-pelayanan" class="btn btn-outline-site">Lihat jadwal lengkap</NuxtLink>
+        </div>
 
-    <section id="informasi" class="content-section bg-white"><div class="container"><div class="row justify-content-between align-items-end g-3 mb-5"><div class="col-lg-6"><p class="public-eyebrow">Informasi gereja</p><h2 class="section-title mb-0">Kabar yang perlu diketahui.</h2></div><div class="col-lg-auto"><NuxtLink to="/informasi" class="link-gkii">Semua informasi <span aria-hidden="true">→</span></NuxtLink></div></div><div v-if="informasiPending" class="text-secondary">Memuat informasi terbaru...</div><div v-else-if="informasiTerbaru.length" class="row g-4"><div v-for="informasi in informasiTerbaru" :key="informasi.idInformasi" class="col-lg-4"><article class="information-item h-100 pb-4"><p class="public-eyebrow mb-2">{{ informasi.kategori }} · {{ formatTanggal(informasi.tanggalPublikasi) }}</p><h3 class="h4 mb-3">{{ informasi.judul }}</h3><p class="text-secondary mb-0">{{ informasi.konten }}</p></article></div></div><div v-else class="text-secondary">{{ informasiError ? 'Informasi belum dapat dimuat.' : 'Belum ada informasi publik yang tersedia.' }}</div></div></section>
+        <div v-if="jadwalMingguan.length" class="schedule-list">
+          <article v-for="jadwal in jadwalMingguan" :key="jadwal.idJadwal" class="schedule-row">
+            <p class="schedule-day">{{ formatHari(jadwal.tanggal) }}</p>
+            <div><h3>{{ jadwal.judul }}</h3><p v-if="jadwal.deskripsi" class="mb-0">{{ jadwal.deskripsi }}</p></div>
+            <p class="schedule-time">{{ formatWaktu(jadwal.waktu) }}</p>
+            <p class="schedule-place">{{ jadwal.tempat }}</p>
+          </article>
+        </div>
+        <div v-else class="schedule-empty">
+          <p>Jadwal mingguan belum diisi dari panel admin.</p>
+          <NuxtLink to="/jadwal-pelayanan" class="text-action">Buka halaman jadwal</NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="kegiatanUnggulan.length || informasiTerbaru.length" class="updates section-space bg-white">
+      <div class="container">
+        <div class="row g-5">
+          <div v-if="kegiatanUnggulan.length" class="col-lg-7">
+            <p class="kicker">Kegiatan</p>
+            <h2 class="display-heading small-heading">Yang akan berlangsung.</h2>
+            <div class="updates-list">
+              <article v-for="kegiatan in kegiatanUnggulan" :key="kegiatan.idKegiatan" class="update-row">
+                <img v-if="kegiatan.gambar" :src="kegiatan.gambar" :alt="kegiatan.judul" loading="lazy">
+                <div v-else class="photo-placeholder" aria-label="Foto kegiatan belum tersedia">Foto kegiatan [ISI]</div>
+                <div><p class="update-meta">{{ formatTanggal(kegiatan.tanggal) }} · {{ formatWaktu(kegiatan.waktu) }}</p><h3>{{ kegiatan.judul }}</h3><p class="mb-0">{{ kegiatan.tempat }}</p></div>
+              </article>
+            </div>
+          </div>
+          <div v-if="informasiTerbaru.length" class="col-lg-5">
+            <p class="kicker">Informasi</p>
+            <h2 class="display-heading small-heading">Kabar gereja.</h2>
+            <div class="news-list">
+              <article v-for="informasi in informasiTerbaru" :key="informasi.idInformasi"><p class="update-meta">{{ informasi.kategori }} · {{ formatTanggal(informasi.tanggalPublikasi) }}</p><h3>{{ informasi.judul }}</h3><p class="mb-0">{{ informasi.konten }}</p></article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="lokasi" class="location-section section-space">
+      <div class="container"><div class="row g-5 align-items-stretch">
+        <div class="col-lg-6"><div class="location-copy"><p class="kicker">Lokasi dan kontak</p><h2 class="display-heading">Temukan kami di Jajar, Solo.</h2><address>{{ gereja.alamat }}</address><p>{{ gereja.petunjukDatang }}</p><div class="contact-list"><p>WhatsApp: {{ gereja.whatsapp || '[ISI: nomor WhatsApp]' }}</p><p>Instagram: {{ gereja.instagram || '[ISI: akun Instagram]' }}</p><p>Email: {{ gereja.email || '[ISI: alamat email]' }}</p></div><a v-if="gereja.mapsUrl" :href="gereja.mapsUrl" target="_blank" rel="noopener noreferrer" class="btn btn-site">Buka peta</a><span v-else class="btn btn-site disabled" aria-disabled="true">Buka peta [ISI]</span></div></div>
+        <div class="col-lg-6"><div class="map-placeholder" role="img" aria-label="Peta lokasi GKII Jajar Solo belum ditautkan"><strong>Peta lokasi</strong><span>[ISI: sematkan Google Maps atau isi gereja.mapsUrl]</span></div></div>
+      </div></div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.hero-section { align-items: center; background: var(--gkii-cream); display: flex; min-height: min(760px, calc(100dvh - 78px)); padding: clamp(4.5rem, 10vw, 8rem) 0; }
-.hero-section h1 { color: var(--gkii-navy-900); font-family: var(--gkii-font-display); font-size: clamp(3rem, 6.5vw, 6rem); line-height: 0.98; max-width: 11ch; }
-.hero-copy { color: var(--gkii-muted); font-size: 1.15rem; max-width: 37rem; }
-.btn-outline-gkii { --bs-btn-color: var(--gkii-navy-900); --bs-btn-border-color: var(--gkii-navy-900); --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--gkii-navy-900); --bs-btn-hover-border-color: var(--gkii-navy-900); border-radius: 0.25rem; font-weight: 650; }
-.next-service { background: var(--gkii-surface); border: 1px solid var(--gkii-border); border-top: 3px solid var(--gkii-gold-500); }
-.next-service-title { color: var(--gkii-navy-900); font-family: var(--gkii-font-display); font-size: clamp(1.8rem, 3vw, 2.35rem); line-height: 1.1; }
-.recurring-note { color: var(--gkii-green-900); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
-.service-details div { border-top: 1px solid var(--gkii-border); display: grid; gap: 1rem; grid-template-columns: 5.5rem 1fr; padding: 0.75rem 0; }.service-details dt { color: var(--gkii-muted); font-weight: 400; }.service-details dd { font-weight: 650; margin: 0; text-align: right; }
-.intro-section { padding: clamp(4.5rem, 9vw, 8rem) 0; }.intro-title, .section-title { color: var(--gkii-navy-900); font-family: var(--gkii-font-display); line-height: 1.08; }.intro-title { font-size: clamp(2.15rem, 4vw, 3.7rem); max-width: 17ch; }.section-title { font-size: clamp(2rem, 3.5vw, 3.25rem); max-width: 17ch; }.intro-copy { color: var(--gkii-muted); font-size: 1.12rem; max-width: 42rem; }.content-section { padding: clamp(4rem, 8vw, 7rem) 0; }
-.link-gkii { color: var(--gkii-navy-900); font-weight: 700; text-decoration-color: var(--gkii-gold-500); text-decoration-thickness: 2px; text-underline-offset: 0.3rem; }.link-gkii:hover { color: var(--gkii-green-900); }
-.activity-card { background-color: var(--gkii-surface); border: 1px solid var(--gkii-border); transition: border-color 180ms ease, transform 180ms ease; }.activity-card:hover { border-color: var(--gkii-navy-700); transform: translateY(-2px); }.activity-image, .activity-placeholder { height: 220px; object-fit: cover; width: 100%; }.activity-placeholder { background-color: var(--gkii-navy-900); }.information-item { border-bottom: 1px solid var(--gkii-border); }.information-item h3 { color: var(--gkii-navy-900); }
-@media (prefers-reduced-motion: reduce) { .activity-card { transition: none; }.activity-card:hover { transform: none; } }
-@media (max-width: 991.98px) { .hero-section { min-height: auto; }.hero-section h1 { max-width: 13ch; } }
+.homepage { background: var(--site-paper); color: var(--site-ink); }
+.arrival-hero { background: var(--site-green); color: white; padding: clamp(4rem, 9vw, 7.5rem) 0; }
+.hero-layout { align-items: end; display: grid; gap: clamp(2.5rem, 7vw, 7rem); grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr); }
+.kicker { color: var(--site-rust); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 1rem; text-transform: none; }
+.arrival-hero .kicker { color: #d5e5d8; }
+.hero-copy-wrap h1, .display-heading { font-family: var(--site-display); font-weight: 500; letter-spacing: -0.035em; line-height: 1.1; }
+.hero-copy-wrap h1 { font-size: clamp(2.75rem, 6vw, 5.4rem); max-width: 12ch; }
+.hero-intro { color: #e2eee4; font-size: 1.15rem; max-width: 36rem; }
+.next-worship { border-top: 3px solid var(--site-rust); padding: 2rem 0 0; }
+.next-worship h2 { font-family: var(--site-display); font-size: clamp(2rem, 3vw, 3rem); font-weight: 500; line-height: 1.1; }
+.worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }
+.hero-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }.text-action { color: inherit; font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 0.25rem; }.btn.disabled { cursor: not-allowed; opacity: 0.65; pointer-events: none; }
+.section-space { padding: clamp(4rem, 8vw, 7rem) 0; }.display-heading { color: var(--site-ink); font-size: clamp(2.25rem, 4vw, 4rem); max-width: 15ch; }.section-copy { color: var(--site-muted); font-size: 1.1rem; max-width: 34rem; }
+.visit-steps { border-top: 1px solid var(--site-line); list-style: none; margin: 0; padding: 0; }.visit-steps li { border-bottom: 1px solid var(--site-line); display: grid; gap: 0.75rem; grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr); padding: 1.25rem 0; }.visit-steps strong { color: var(--site-ink); }.visit-steps span { color: var(--site-muted); }
+.weekly-schedule { background: var(--site-paper-deep); }.schedule-heading { align-items: end; display: flex; gap: 2rem; justify-content: space-between; margin-bottom: 2.5rem; }.schedule-list { border-top: 1px solid var(--site-line); }.schedule-row { align-items: baseline; border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 8rem minmax(0, 1fr) 7rem 11rem; padding: 1.5rem 0; }.schedule-row h3 { font-size: 1.15rem; margin: 0 0 0.35rem; }.schedule-row p { color: var(--site-muted); margin: 0; }.schedule-day, .schedule-time { color: var(--site-ink) !important; font-weight: 700; }.schedule-time { text-align: right; }.schedule-place { text-align: right; }.schedule-empty { border: 1px dashed var(--site-line); max-width: 42rem; padding: 1.5rem; }
+.btn-site { --bs-btn-bg: var(--site-green); --bs-btn-border-color: var(--site-green); --bs-btn-color: white; --bs-btn-hover-bg: var(--site-green-dark); --bs-btn-hover-border-color: var(--site-green-dark); border-radius: 0.2rem; font-weight: 700; }.btn-outline-site { --bs-btn-color: var(--site-ink); --bs-btn-border-color: var(--site-ink); --bs-btn-hover-bg: var(--site-ink); --bs-btn-hover-border-color: var(--site-ink); --bs-btn-hover-color: white; border-radius: 0.2rem; font-weight: 700; }
+.small-heading { font-size: clamp(1.9rem, 3vw, 2.8rem); }.updates-list, .news-list { border-top: 1px solid var(--site-line); }.update-row { border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 9rem 1fr; padding: 1.25rem 0; }.update-row img, .photo-placeholder { aspect-ratio: 4 / 3; background: var(--site-green); color: white; object-fit: cover; padding: 1rem; }.update-row h3, .news-list h3 { font-size: 1.15rem; margin: 0.25rem 0; }.update-meta { color: var(--site-rust); font-size: 0.86rem; font-weight: 700; margin-bottom: 0.25rem; }.news-list article { border-bottom: 1px solid var(--site-line); padding: 1.1rem 0; }.news-list p:not(.update-meta) { color: var(--site-muted); }
+.location-section { background: var(--site-ink); color: white; }.location-section .display-heading { color: white; }.location-section .kicker { color: #b9d4bf; }.location-copy { height: 100%; }.location-copy address { font-size: 1.15rem; font-style: normal; font-weight: 700; max-width: 30rem; }.location-copy > p { color: #d8e1e4; max-width: 34rem; }.contact-list { border-top: 1px solid rgb(255 255 255 / 25%); margin: 2rem 0; padding-top: 1rem; }.contact-list p { margin: 0.35rem 0; }.map-placeholder { align-items: center; background: var(--site-paper-deep); color: var(--site-ink); display: flex; flex-direction: column; height: 100%; justify-content: center; min-height: 20rem; padding: 2rem; text-align: center; }.map-placeholder span { color: var(--site-muted); margin-top: 0.5rem; max-width: 20rem; }
+@media (max-width: 991.98px) { .hero-layout { grid-template-columns: 1fr; }.schedule-row { grid-template-columns: 7rem minmax(0, 1fr) 7rem; }.schedule-place { grid-column: 2 / -1; text-align: left; } }
+@media (max-width: 575.98px) { .arrival-hero { padding: 4rem 0; }.visit-steps li, .schedule-row { grid-template-columns: 1fr; gap: 0.5rem; }.schedule-time, .schedule-place { grid-column: auto; text-align: left; }.schedule-heading { align-items: start; flex-direction: column; }.hero-actions { align-items: stretch; flex-direction: column; }.hero-actions .btn { width: fit-content; } }
 </style>

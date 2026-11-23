@@ -1,22 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Lora:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+
 :root {
-  --gkii-navy-900: #14245f;
-  --gkii-navy-700: #24377c;
-  --gkii-green-900: #1d5b35;
-  --gkii-green-700: #2d7546;
-  --gkii-green-100: #eaf3ec;
+  /* Identitas publik GKII Jajar Solo: tenang, lokal, dan mudah dibaca. */
+  --site-ink: #182126;
+  --site-green: #2f5d50;
+  --site-green-dark: #23473d;
+  --site-paper: #f4f1e8;
+  --site-paper-deep: #ece7da;
+  --site-rust: #a94a37;
+  --site-muted: #556168;
+  --site-line: #cbd0c6;
 
-  --gkii-gold-500: #a97f20;
-  --gkii-gold-100: #f7f0df;
+  --gkii-navy-900: var(--site-ink);
+  --gkii-navy-700: #34464f;
+  --gkii-green-900: var(--site-green);
+  --gkii-green-700: var(--site-green-dark);
+  --gkii-green-100: #deebe3;
+  --gkii-gold-500: var(--site-rust);
+  --gkii-gold-100: #f3e5df;
   --gkii-red-700: #a62b25;
-
-  --gkii-cream: #fafaf7;
+  --gkii-cream: var(--site-paper);
   --gkii-surface: #ffffff;
-  --gkii-text: #172033;
-  --gkii-muted: #5b6577;
-  --gkii-border: #dce1e8;
-
-  --gkii-font-display: Georgia, "Times New Roman", serif;
-  --gkii-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --gkii-text: var(--site-ink);
+  --gkii-muted: var(--site-muted);
+  --gkii-border: var(--site-line);
+  --gkii-font-display: 'Lora', Georgia, serif;
+  --gkii-font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --site-display: 'Lora', Georgia, serif;
 }
 
 html {
@@ -37,7 +47,7 @@ h4,
 h5,
 h6 {
   font-family: var(--gkii-font-display);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
