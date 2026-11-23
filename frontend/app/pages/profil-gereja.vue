@@ -16,8 +16,8 @@ useHead({
         </h1>
 
         <p class="lead mb-0 col-lg-8">
-          GKII Jajar Solo hadir sebagai komunitas yang berakar dalam firman,
-          saling menguatkan, dan menjadi berkat bagi sesama.
+          GKII Jajar Solo merupakan bagian dari Gereja Kemah Injil Indonesia
+          (GKII), sebuah keluarga gereja yang bertumbuh di Indonesia sejak 1928.
         </p>
       </div>
     </section>
@@ -34,17 +34,14 @@ useHead({
           </div>
 
           <div class="col-lg-7">
-            <p class="lead text-secondary">
-              GKII Jajar Solo adalah komunitas orang percaya yang rindu
-              bertumbuh bersama dalam iman kepada Kristus, saling melayani,
-              dan membawa dampak positif bagi lingkungan sekitar.
-            </p>
+            <p class="lead text-secondary">GKII membawa visi “Injil untuk semua orang”.
+              Di tingkat sinode, tema <em>Growing Together</em> dihubungkan dengan
+              Efesus 4:15–16: bertumbuh dalam Kristus dan saling membangun dalam kasih.</p>
 
-            <p class="text-secondary mb-0">
-              Kami percaya bahwa gereja bukan hanya tempat beribadah, tetapi
-              juga rumah bagi setiap orang untuk mengenal Tuhan, membangun
-              relasi, dan menemukan kesempatan untuk melayani.
-            </p>
+            <p class="text-secondary mb-0">Informasi seperti sejarah lokal GKII Jajar,
+              nama pelayan, alamat, dan kegiatan setempat akan ditambahkan setelah
+              dikonfirmasi oleh gereja. Untuk mengenal sinode, kunjungi
+              <a href="https://kemah-injil.org/tentang" target="_blank" rel="noopener noreferrer">situs resmi GKII</a>.</p>
           </div>
         </div>
       </div>
@@ -73,8 +70,6 @@ useHead({
         <div class="row g-4">
           <div class="col-md-4">
             <article class="value-card h-100 p-4">
-              <p class="value-number mb-3">01</p>
-
               <h3 class="h4 mb-3">Bertumbuh</h3>
 
               <p class="text-secondary mb-0">
@@ -86,8 +81,6 @@ useHead({
 
           <div class="col-md-4">
             <article class="value-card h-100 p-4">
-              <p class="value-number mb-3">02</p>
-
               <h3 class="h4 mb-3">Bersekutu</h3>
 
               <p class="text-secondary mb-0">
@@ -99,8 +92,6 @@ useHead({
 
           <div class="col-md-4">
             <article class="value-card h-100 p-4">
-              <p class="value-number mb-3">03</p>
-
               <h3 class="h4 mb-3">Melayani</h3>
 
               <p class="text-secondary mb-0">
@@ -124,20 +115,16 @@ useHead({
                 Mari bertumbuh dan melayani bersama.
               </h2>
 
-              <p class="mb-0 text-white-50">
-                Kunjungi ibadah kami atau hubungi sekretariat GKII Jajar Solo
-                untuk informasi pelayanan lebih lanjut.
-              </p>
+              <p class="mb-0 text-white-50">Data kontak dan lokasi GKII Jajar Solo
+                akan ditampilkan setelah dikonfirmasi oleh pengurus gereja.</p>
             </div>
 
             <div class="col-lg-4 text-lg-end">
               <a
-                href="https://maps.google.com/?q=GKII+Jajar+Solo"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/#lokasi"
                 class="btn btn-light btn-lg"
               >
-                Lihat Lokasi Gereja
+                Lihat informasi lokasi
               </a>
             </div>
           </div>

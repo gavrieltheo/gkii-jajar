@@ -35,8 +35,17 @@ const gereja = {
   whatsapp: '',
   instagram: '',
   email: '',
-  kalimatKhas: '[ISI: satu kalimat khas tentang GKII Jajar Solo]',
+  kalimatKhas: 'Bertumbuh bersama sebagai bagian dari keluarga GKII.',
   fotoUtama: ''
+}
+
+const sinode = {
+  nama: 'Gereja Kemah Injil Indonesia',
+  sejak: '1928',
+  visi: 'Injil untuk semua orang',
+  tema: 'Growing Together',
+  ayat: 'Efesus 4:15–16',
+  situs: 'https://kemah-injil.org/'
 }
 
 const { apiFetch } = useApi()
@@ -92,7 +101,8 @@ useHead({ title: 'GKII Jajar Solo' })
               {{ gereja.kalimatKhas }}
             </h1>
             <p class="hero-intro">
-              Datang beribadah, berjumpa dengan komunitas, dan temukan ruang untuk melayani bersama.
+              GKII Jajar Solo adalah bagian dari {{ sinode.nama }}. Datang beribadah,
+              berjumpa dengan komunitas, dan temukan ruang untuk melayani bersama.
             </p>
           </div>
 
@@ -125,6 +135,27 @@ useHead({ title: 'GKII Jajar Solo' })
               <a href="#datang-pertama" class="text-action">Panduan datang pertama kali</a>
             </div>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sinode-section section-space bg-white">
+      <div class="container">
+        <div class="sinode-layout">
+          <div>
+            <p class="kicker">Dalam keluarga GKII</p>
+            <h2 class="display-heading">Satu sinode, hadir di banyak tempat.</h2>
+          </div>
+          <div class="sinode-copy">
+            <p>
+              {{ sinode.nama }} bertumbuh sejak {{ sinode.sejak }} dengan visi
+              “{{ sinode.visi }}”. Tema sinode, {{ sinode.tema }}, berakar pada
+              {{ sinode.ayat }}.
+            </p>
+            <a :href="sinode.situs" target="_blank" rel="noopener noreferrer" class="text-action">
+              Kunjungi situs GKII pusat
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -230,11 +261,12 @@ useHead({ title: 'GKII Jajar Solo' })
 .worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }
 .hero-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }.text-action { color: inherit; font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 0.25rem; }.btn.disabled { cursor: not-allowed; opacity: 0.65; pointer-events: none; }
 .section-space { padding: clamp(4rem, 8vw, 7rem) 0; }.display-heading { color: var(--site-ink); font-size: clamp(2.25rem, 4vw, 4rem); max-width: 15ch; }.section-copy { color: var(--site-muted); font-size: 1.1rem; max-width: 34rem; }
+.sinode-section { border-top: 1px solid var(--site-line); }.sinode-layout { display: grid; gap: clamp(2rem, 7vw, 7rem); grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr); }.sinode-copy { border-top: 3px solid var(--site-rust); color: var(--site-muted); font-size: 1.1rem; padding-top: 1.5rem; }.sinode-copy p { max-width: 34rem; }
 .visit-steps { border-top: 1px solid var(--site-line); list-style: none; margin: 0; padding: 0; }.visit-steps li { border-bottom: 1px solid var(--site-line); display: grid; gap: 0.75rem; grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr); padding: 1.25rem 0; }.visit-steps strong { color: var(--site-ink); }.visit-steps span { color: var(--site-muted); }
 .weekly-schedule { background: var(--site-paper-deep); }.schedule-heading { align-items: end; display: flex; gap: 2rem; justify-content: space-between; margin-bottom: 2.5rem; }.schedule-list { border-top: 1px solid var(--site-line); }.schedule-row { align-items: baseline; border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 8rem minmax(0, 1fr) 7rem 11rem; padding: 1.5rem 0; }.schedule-row h3 { font-size: 1.15rem; margin: 0 0 0.35rem; }.schedule-row p { color: var(--site-muted); margin: 0; }.schedule-day, .schedule-time { color: var(--site-ink) !important; font-weight: 700; }.schedule-time { text-align: right; }.schedule-place { text-align: right; }.schedule-empty { border: 1px dashed var(--site-line); max-width: 42rem; padding: 1.5rem; }
 .btn-site { --bs-btn-bg: var(--site-green); --bs-btn-border-color: var(--site-green); --bs-btn-color: white; --bs-btn-hover-bg: var(--site-green-dark); --bs-btn-hover-border-color: var(--site-green-dark); border-radius: 0.2rem; font-weight: 700; }.btn-outline-site { --bs-btn-color: var(--site-ink); --bs-btn-border-color: var(--site-ink); --bs-btn-hover-bg: var(--site-ink); --bs-btn-hover-border-color: var(--site-ink); --bs-btn-hover-color: white; border-radius: 0.2rem; font-weight: 700; }
 .small-heading { font-size: clamp(1.9rem, 3vw, 2.8rem); }.updates-list, .news-list { border-top: 1px solid var(--site-line); }.update-row { border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 9rem 1fr; padding: 1.25rem 0; }.update-row img, .photo-placeholder { aspect-ratio: 4 / 3; background: var(--site-green); color: white; object-fit: cover; padding: 1rem; }.update-row h3, .news-list h3 { font-size: 1.15rem; margin: 0.25rem 0; }.update-meta { color: var(--site-rust); font-size: 0.86rem; font-weight: 700; margin-bottom: 0.25rem; }.news-list article { border-bottom: 1px solid var(--site-line); padding: 1.1rem 0; }.news-list p:not(.update-meta) { color: var(--site-muted); }
 .location-section { background: var(--site-ink); color: white; }.location-section .display-heading { color: white; }.location-section .kicker { color: #b9d4bf; }.location-copy { height: 100%; }.location-copy address { font-size: 1.15rem; font-style: normal; font-weight: 700; max-width: 30rem; }.location-copy > p { color: #d8e1e4; max-width: 34rem; }.contact-list { border-top: 1px solid rgb(255 255 255 / 25%); margin: 2rem 0; padding-top: 1rem; }.contact-list p { margin: 0.35rem 0; }.map-placeholder { align-items: center; background: var(--site-paper-deep); color: var(--site-ink); display: flex; flex-direction: column; height: 100%; justify-content: center; min-height: 20rem; padding: 2rem; text-align: center; }.map-placeholder span { color: var(--site-muted); margin-top: 0.5rem; max-width: 20rem; }
-@media (max-width: 991.98px) { .hero-layout { grid-template-columns: 1fr; }.schedule-row { grid-template-columns: 7rem minmax(0, 1fr) 7rem; }.schedule-place { grid-column: 2 / -1; text-align: left; } }
+@media (max-width: 991.98px) { .hero-layout, .sinode-layout { grid-template-columns: 1fr; }.schedule-row { grid-template-columns: 7rem minmax(0, 1fr) 7rem; }.schedule-place { grid-column: 2 / -1; text-align: left; } }
 @media (max-width: 575.98px) { .arrival-hero { padding: 4rem 0; }.visit-steps li, .schedule-row { grid-template-columns: 1fr; gap: 0.5rem; }.schedule-time, .schedule-place { grid-column: auto; text-align: left; }.schedule-heading { align-items: start; flex-direction: column; }.hero-actions { align-items: stretch; flex-direction: column; }.hero-actions .btn { width: fit-content; } }
 </style>
