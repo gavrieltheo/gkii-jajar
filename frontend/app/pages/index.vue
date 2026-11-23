@@ -29,9 +29,10 @@ type InformasiPublik = {
 
 // Ganti seluruh nilai [ISI: ...] ini saat data gereja sudah tersedia.
 const gereja = {
-  alamat: '[ISI: alamat lengkap GKII Jajar Solo]',
-  mapsUrl: '',
-  petunjukDatang: '[ISI: patokan, akses masuk, dan informasi parkir]',
+  alamat: 'Jl. Fajar Indah I No. 35, Jajar, Laweyan, Surakarta',
+  mapsUrl: 'https://www.google.com/maps/place/Gereja+Kemah+Injil+Indonesia+Jajar-Solo/@-7.5489964,110.7158152,13z/data=!4m10!1m2!2m1!1sgkii+jajar+solo!3m6!1s0x2e7a152b813ebbbd:0x7102fa1e2c9d278d!8m2!3d-7.5489964!4d110.7920329!15sCg9na2lpIGphamFyIHNvbG-SAQZjaHVyY2jgAQA!16s%2Fg%2F11vydxvqz3?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D',
+  mapEmbedUrl: 'https://www.google.com/maps?q=-7.5489964,110.7920329&z=17&output=embed',
+  petunjukDatang: 'Parkir tersedia di halaman gereja.',
   whatsapp: '',
   instagram: '',
   email: '',
@@ -171,8 +172,8 @@ useHead({ title: 'GKII Jajar Solo' })
           <div class="col-lg-7">
             <ol class="visit-steps">
               <li>
-                <strong>Datang 15 menit lebih awal</strong>
-                <span>[ISI: titik parkir, pintu masuk, atau patokan gedung]</span>
+                <strong>Parkir di halaman gereja</strong>
+                <span>Parkir tersedia di halaman gereja. Datang lebih awal agar lebih leluasa.</span>
               </li>
               <li>
                 <strong>Sapa tim penyambut</strong>
@@ -241,7 +242,17 @@ useHead({ title: 'GKII Jajar Solo' })
     <section id="lokasi" class="location-section section-space">
       <div class="container"><div class="row g-5 align-items-stretch">
         <div class="col-lg-6"><div class="location-copy"><p class="kicker">Lokasi dan kontak</p><h2 class="display-heading">Temukan kami di Jajar, Solo.</h2><address>{{ gereja.alamat }}</address><p>{{ gereja.petunjukDatang }}</p><div class="contact-list"><p>WhatsApp: {{ gereja.whatsapp || '[ISI: nomor WhatsApp]' }}</p><p>Instagram: {{ gereja.instagram || '[ISI: akun Instagram]' }}</p><p>Email: {{ gereja.email || '[ISI: alamat email]' }}</p></div><a v-if="gereja.mapsUrl" :href="gereja.mapsUrl" target="_blank" rel="noopener noreferrer" class="btn btn-site">Buka peta</a><span v-else class="btn btn-site disabled" aria-disabled="true">Buka peta [ISI]</span></div></div>
-        <div class="col-lg-6"><div class="map-placeholder" role="img" aria-label="Peta lokasi GKII Jajar Solo belum ditautkan"><strong>Peta lokasi</strong><span>[ISI: sematkan Google Maps atau isi gereja.mapsUrl]</span></div></div>
+        <div class="col-lg-6">
+          <iframe
+            v-if="gereja.mapEmbedUrl"
+            class="map-frame"
+            :src="gereja.mapEmbedUrl"
+            title="Peta lokasi GKII Jajar Solo"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          />
+          <div v-else class="map-placeholder" role="img" aria-label="Peta lokasi GKII Jajar Solo belum ditautkan"><strong>Peta lokasi</strong><span>[ISI: sematkan Google Maps atau isi gereja.mapsUrl]</span></div>
+        </div>
       </div></div>
     </section>
   </div>
@@ -266,7 +277,7 @@ useHead({ title: 'GKII Jajar Solo' })
 .weekly-schedule { background: var(--site-paper-deep); }.schedule-heading { align-items: end; display: flex; gap: 2rem; justify-content: space-between; margin-bottom: 2.5rem; }.schedule-list { border-top: 1px solid var(--site-line); }.schedule-row { align-items: baseline; border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 8rem minmax(0, 1fr) 7rem 11rem; padding: 1.5rem 0; }.schedule-row h3 { font-size: 1.15rem; margin: 0 0 0.35rem; }.schedule-row p { color: var(--site-muted); margin: 0; }.schedule-day, .schedule-time { color: var(--site-ink) !important; font-weight: 700; }.schedule-time { text-align: right; }.schedule-place { text-align: right; }.schedule-empty { border: 1px dashed var(--site-line); max-width: 42rem; padding: 1.5rem; }
 .btn-site { --bs-btn-bg: var(--site-green); --bs-btn-border-color: var(--site-green); --bs-btn-color: white; --bs-btn-hover-bg: var(--site-green-dark); --bs-btn-hover-border-color: var(--site-green-dark); border-radius: 0.2rem; font-weight: 700; }.btn-outline-site { --bs-btn-color: var(--site-ink); --bs-btn-border-color: var(--site-ink); --bs-btn-hover-bg: var(--site-ink); --bs-btn-hover-border-color: var(--site-ink); --bs-btn-hover-color: white; border-radius: 0.2rem; font-weight: 700; }
 .small-heading { font-size: clamp(1.9rem, 3vw, 2.8rem); }.updates-list, .news-list { border-top: 1px solid var(--site-line); }.update-row { border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 9rem 1fr; padding: 1.25rem 0; }.update-row img, .photo-placeholder { aspect-ratio: 4 / 3; background: var(--site-green); color: white; object-fit: cover; padding: 1rem; }.update-row h3, .news-list h3 { font-size: 1.15rem; margin: 0.25rem 0; }.update-meta { color: var(--site-rust); font-size: 0.86rem; font-weight: 700; margin-bottom: 0.25rem; }.news-list article { border-bottom: 1px solid var(--site-line); padding: 1.1rem 0; }.news-list p:not(.update-meta) { color: var(--site-muted); }
-.location-section { background: var(--site-ink); color: white; }.location-section .display-heading { color: white; }.location-section .kicker { color: #b9d4bf; }.location-copy { height: 100%; }.location-copy address { font-size: 1.15rem; font-style: normal; font-weight: 700; max-width: 30rem; }.location-copy > p { color: #d8e1e4; max-width: 34rem; }.contact-list { border-top: 1px solid rgb(255 255 255 / 25%); margin: 2rem 0; padding-top: 1rem; }.contact-list p { margin: 0.35rem 0; }.map-placeholder { align-items: center; background: var(--site-paper-deep); color: var(--site-ink); display: flex; flex-direction: column; height: 100%; justify-content: center; min-height: 20rem; padding: 2rem; text-align: center; }.map-placeholder span { color: var(--site-muted); margin-top: 0.5rem; max-width: 20rem; }
+.location-section { background: var(--site-ink); color: white; }.location-section .display-heading { color: white; }.location-section .kicker { color: #b9d4bf; }.location-copy { height: 100%; }.location-copy address { font-size: 1.15rem; font-style: normal; font-weight: 700; max-width: 30rem; }.location-copy > p { color: #d8e1e4; max-width: 34rem; }.contact-list { border-top: 1px solid rgb(255 255 255 / 25%); margin: 2rem 0; padding-top: 1rem; }.contact-list p { margin: 0.35rem 0; }.map-frame, .map-placeholder { border: 0; display: block; height: 100%; min-height: 20rem; width: 100%; }.map-placeholder { align-items: center; background: var(--site-paper-deep); color: var(--site-ink); display: flex; flex-direction: column; justify-content: center; padding: 2rem; text-align: center; }.map-placeholder span { color: var(--site-muted); margin-top: 0.5rem; max-width: 20rem; }
 @media (max-width: 991.98px) { .hero-layout, .sinode-layout { grid-template-columns: 1fr; }.schedule-row { grid-template-columns: 7rem minmax(0, 1fr) 7rem; }.schedule-place { grid-column: 2 / -1; text-align: left; } }
 @media (max-width: 575.98px) { .arrival-hero { padding: 4rem 0; }.visit-steps li, .schedule-row { grid-template-columns: 1fr; gap: 0.5rem; }.schedule-time, .schedule-place { grid-column: auto; text-align: left; }.schedule-heading { align-items: start; flex-direction: column; }.hero-actions { align-items: stretch; flex-direction: column; }.hero-actions .btn { width: fit-content; } }
 </style>
