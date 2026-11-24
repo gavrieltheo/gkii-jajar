@@ -66,10 +66,58 @@ const { data: daftarInformasi } = await useAsyncData(
   async () => (await apiFetch<InformasiPublik[]>('/public/informasi')).data
 )
 
-const jadwalTerdekat = computed(() => daftarJadwal.value?.[0] ?? null)
+const jadwalUntukHero = computed(() => daftarJadwal.value?.slice(0, 4) ?? [])
+const indeksJadwalAktif = ref(0)
+const carouselDijeda = ref(false)
+const carouselSiap = ref(false)
+let carouselTimer: ReturnType<typeof setInterval> | undefined
+
+const jadwalAktif = computed(() => jadwalUntukHero.value[indeksJadwalAktif.value] ?? null)
 const jadwalMingguan = computed(() => daftarJadwal.value?.filter((jadwal) => jadwal.polaPengulangan === 'MINGGUAN') ?? [])
 const kegiatanUnggulan = computed(() => daftarKegiatan.value?.slice(0, 3) ?? [])
 const informasiTerbaru = computed(() => daftarInformasi.value?.slice(0, 3) ?? [])
+
+function hentikanCarousel() {
+  if (carouselTimer) clearInterval(carouselTimer)
+  carouselTimer = undefined
+}
+
+function tampilkanJadwal(indeks: number, jedaOtomatis = true) {
+  indeksJadwalAktif.value = indeks
+  if (jedaOtomatis) {
+    carouselDijeda.value = true
+    hentikanCarousel()
+  }
+}
+
+function jadwalBerikutnya() {
+  if (!jadwalUntukHero.value.length) return
+  tampilkanJadwal((indeksJadwalAktif.value + 1) % jadwalUntukHero.value.length, false)
+}
+
+function mulaiCarousel() {
+  hentikanCarousel()
+  if (carouselDijeda.value || jadwalUntukHero.value.length < 2) return
+  carouselTimer = setInterval(jadwalBerikutnya, 8000)
+}
+
+function toggleCarousel() {
+  carouselDijeda.value = !carouselDijeda.value
+  mulaiCarousel()
+}
+
+watch(jadwalUntukHero, (jadwal) => {
+  if (indeksJadwalAktif.value >= jadwal.length) indeksJadwalAktif.value = 0
+  if (carouselSiap.value) mulaiCarousel()
+}, { immediate: true })
+
+onMounted(() => {
+  carouselSiap.value = true
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) carouselDijeda.value = true
+  mulaiCarousel()
+})
+
+onBeforeUnmount(hentikanCarousel)
 
 function formatTanggal(tanggal: string) {
   return new Intl.DateTimeFormat('id-ID', {
@@ -107,19 +155,41 @@ useHead({ title: 'GKII Jajar Solo' })
             </p>
           </div>
 
-          <article class="next-worship" aria-labelledby="judul-ibadah-terdekat">
-            <p class="kicker">Ibadah terdekat</p>
+          <article class="next-worship" aria-labelledby="judul-jadwal-hero">
+            <p class="kicker">Jadwal ibadah</p>
             <template v-if="jadwalPending">
-              <h2 id="judul-ibadah-terdekat">Memuat jadwal ibadah...</h2>
+              <h2 id="judul-jadwal-hero">Memuat jadwal ibadah...</h2>
             </template>
-            <template v-else-if="jadwalTerdekat">
-              <p class="worship-day">{{ formatHari(jadwalTerdekat.tanggal) }}</p>
-              <h2 id="judul-ibadah-terdekat">{{ jadwalTerdekat.judul }}</h2>
-              <p class="worship-time">{{ formatWaktu(jadwalTerdekat.waktu) }}</p>
-              <p class="worship-place">{{ jadwalTerdekat.tempat }}</p>
+            <template v-else-if="jadwalAktif">
+              <Transition name="schedule-slide" mode="out-in">
+                <div :key="jadwalAktif.idJadwal" class="schedule-slide-content">
+                  <p class="schedule-status">{{ indeksJadwalAktif === 0 ? 'Ibadah terdekat' : 'Jadwal berikutnya' }}</p>
+                  <p class="worship-day">{{ formatHari(jadwalAktif.tanggal) }}</p>
+                  <h2 id="judul-jadwal-hero">{{ jadwalAktif.judul }}</h2>
+                  <p class="worship-time">{{ formatWaktu(jadwalAktif.waktu) }}</p>
+                  <p class="worship-place">{{ jadwalAktif.tempat }}</p>
+                </div>
+              </Transition>
+              <div v-if="jadwalUntukHero.length > 1" class="schedule-controls">
+                <div class="schedule-dots" aria-label="Pilih jadwal ibadah">
+                  <button
+                    v-for="(jadwal, indeks) in jadwalUntukHero"
+                    :key="jadwal.idJadwal"
+                    type="button"
+                    class="schedule-dot"
+                    :class="{ active: indeks === indeksJadwalAktif }"
+                    :aria-label="`Tampilkan ${jadwal.judul}`"
+                    :aria-pressed="indeks === indeksJadwalAktif"
+                    @click="tampilkanJadwal(indeks)"
+                  />
+                </div>
+                <button type="button" class="carousel-toggle" :aria-pressed="carouselDijeda" @click="toggleCarousel">
+                  {{ carouselDijeda ? 'Putar otomatis' : 'Jeda otomatis' }}
+                </button>
+              </div>
             </template>
             <template v-else>
-              <h2 id="judul-ibadah-terdekat">Jadwal ibadah sedang diperbarui</h2>
+              <h2 id="judul-jadwal-hero">Jadwal ibadah sedang diperbarui</h2>
               <p class="worship-place">Silakan hubungi gereja untuk jadwal minggu ini.</p>
             </template>
             <div class="hero-actions">
@@ -269,7 +339,7 @@ useHead({ title: 'GKII Jajar Solo' })
 .hero-intro { color: #e2eee4; font-size: 1.15rem; max-width: 36rem; }
 .next-worship { border-top: 3px solid var(--site-rust); padding: 2rem 0 0; }
 .next-worship h2 { font-family: var(--site-display); font-size: clamp(2rem, 3vw, 3rem); font-weight: 500; line-height: 1.1; }
-.worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }
+.schedule-slide-content { min-height: 13rem; }.schedule-status { color: #d5e5d8; font-size: 0.9rem; font-weight: 700; margin: 0 0 1.15rem; }.worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }.schedule-controls { align-items: center; display: flex; gap: 1rem; margin: 0 0 1.25rem; }.schedule-dots { display: flex; gap: 0.35rem; }.schedule-dot { background: rgb(255 255 255 / 38%); border: 0; border-radius: 999px; height: 0.55rem; padding: 0; transition: background-color 160ms ease, transform 160ms ease; width: 0.55rem; }.schedule-dot.active { background: white; transform: scale(1.15); }.carousel-toggle { background: transparent; border: 0; color: #d5e5d8; font-size: 0.9rem; font-weight: 700; padding: 0.6rem 0; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25rem; }.schedule-slide-enter-active, .schedule-slide-leave-active { transition: opacity 250ms ease, transform 250ms ease; }.schedule-slide-enter-from { opacity: 0; transform: translateX(1rem); }.schedule-slide-leave-to { opacity: 0; transform: translateX(-1rem); }
 .hero-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }.text-action { color: inherit; font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 0.25rem; }.btn.disabled { cursor: not-allowed; opacity: 0.65; pointer-events: none; }
 .section-space { padding: clamp(4rem, 8vw, 7rem) 0; }.display-heading { color: var(--site-ink); font-size: clamp(2.25rem, 4vw, 4rem); max-width: 15ch; }.section-copy { color: var(--site-muted); font-size: 1.1rem; max-width: 34rem; }
 .sinode-section { border-top: 1px solid var(--site-line); }.sinode-layout { display: grid; gap: clamp(2rem, 7vw, 7rem); grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr); }.sinode-copy { border-top: 3px solid var(--site-rust); color: var(--site-muted); font-size: 1.1rem; padding-top: 1.5rem; }.sinode-copy p { max-width: 34rem; }
@@ -279,5 +349,6 @@ useHead({ title: 'GKII Jajar Solo' })
 .small-heading { font-size: clamp(1.9rem, 3vw, 2.8rem); }.updates-list, .news-list { border-top: 1px solid var(--site-line); }.update-row { border-bottom: 1px solid var(--site-line); display: grid; gap: 1.25rem; grid-template-columns: 9rem 1fr; padding: 1.25rem 0; }.update-row img, .photo-placeholder { aspect-ratio: 4 / 3; background: var(--site-green); color: white; object-fit: cover; padding: 1rem; }.update-row h3, .news-list h3 { font-size: 1.15rem; margin: 0.25rem 0; }.update-meta { color: var(--site-rust); font-size: 0.86rem; font-weight: 700; margin-bottom: 0.25rem; }.news-list article { border-bottom: 1px solid var(--site-line); padding: 1.1rem 0; }.news-list p:not(.update-meta) { color: var(--site-muted); }
 .location-section { background: var(--site-ink); color: white; }.location-section .display-heading { color: white; }.location-section .kicker { color: #b9d4bf; }.location-copy { height: 100%; }.location-copy address { font-size: 1.15rem; font-style: normal; font-weight: 700; max-width: 30rem; }.location-copy > p { color: #d8e1e4; max-width: 34rem; }.contact-list { border-top: 1px solid rgb(255 255 255 / 25%); margin: 2rem 0; padding-top: 1rem; }.contact-list p { margin: 0.35rem 0; }.map-frame, .map-placeholder { border: 0; display: block; height: 100%; min-height: 20rem; width: 100%; }.map-placeholder { align-items: center; background: var(--site-paper-deep); color: var(--site-ink); display: flex; flex-direction: column; justify-content: center; padding: 2rem; text-align: center; }.map-placeholder span { color: var(--site-muted); margin-top: 0.5rem; max-width: 20rem; }
 @media (max-width: 991.98px) { .hero-layout, .sinode-layout { grid-template-columns: 1fr; }.schedule-row { grid-template-columns: 7rem minmax(0, 1fr) 7rem; }.schedule-place { grid-column: 2 / -1; text-align: left; } }
-@media (max-width: 575.98px) { .arrival-hero { padding: 4rem 0; }.visit-steps li, .schedule-row { grid-template-columns: 1fr; gap: 0.5rem; }.schedule-time, .schedule-place { grid-column: auto; text-align: left; }.schedule-heading { align-items: start; flex-direction: column; }.hero-actions { align-items: stretch; flex-direction: column; }.hero-actions .btn { width: fit-content; } }
+@media (max-width: 575.98px) { .arrival-hero { padding: 4rem 0; }.visit-steps li, .schedule-row { grid-template-columns: 1fr; gap: 0.5rem; }.schedule-time, .schedule-place { grid-column: auto; text-align: left; }.schedule-heading { align-items: start; flex-direction: column; }.hero-actions { align-items: stretch; flex-direction: column; }.hero-actions .btn { width: fit-content; }.schedule-slide-content { min-height: 14.5rem; } }
+@media (prefers-reduced-motion: reduce) { .schedule-slide-enter-active, .schedule-slide-leave-active, .schedule-dot { transition: none; } }
 </style>
