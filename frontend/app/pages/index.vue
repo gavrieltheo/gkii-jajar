@@ -331,7 +331,7 @@ useHead({ title: 'GKII Jajar Solo' })
 <style scoped>
 .homepage { background: var(--site-paper); color: var(--site-ink); }
 .arrival-hero { background: var(--site-green); color: white; padding: clamp(4rem, 9vw, 7.5rem) 0; }
-.hero-layout { align-items: end; display: grid; gap: clamp(2.5rem, 7vw, 7rem); grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr); }
+.hero-layout { align-items: center; display: grid; gap: clamp(2.5rem, 7vw, 7rem); grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr); }
 .kicker { color: var(--site-rust); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 1rem; text-transform: none; }
 .arrival-hero .kicker { color: #d5e5d8; }
 .hero-copy-wrap h1, .display-heading { font-family: var(--site-display); font-weight: 500; letter-spacing: -0.035em; line-height: 1.1; }
