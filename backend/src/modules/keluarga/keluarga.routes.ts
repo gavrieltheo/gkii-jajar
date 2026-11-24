@@ -31,7 +31,13 @@ function readKeluargaInput(body: unknown): KeluargaInput | null {
   const alamat =
     typeof data.alamat === 'string'
       ? data.alamat.trim()
-      : '';
+    : '';
+
+  let nomorKk: string | null = null;
+  if (data.nomorKk !== undefined && data.nomorKk !== null) {
+    if (typeof data.nomorKk !== 'string' || (data.nomorKk.trim() && !/^\d{16}$/.test(data.nomorKk.trim()))) return null;
+    nomorKk = data.nomorKk.trim() || null;
+  }
 
   let telepon: string | null = null;
 
@@ -47,7 +53,7 @@ function readKeluargaInput(body: unknown): KeluargaInput | null {
     return null;
   }
 
-  return { namaKeluarga, alamat, telepon };
+  return { namaKeluarga, nomorKk, alamat, telepon };
 }
 
 function isForeignKeyViolation(error: unknown): boolean {
@@ -56,6 +62,15 @@ function isForeignKeyViolation(error: unknown): boolean {
     error !== null &&
     'code' in error &&
     (error as { code?: string }).code === '23503'
+  );
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: string }).code === '23505'
   );
 }
 
@@ -99,9 +114,23 @@ keluargaRouter.post('/', async (request, response) => {
     });
   }
 
-  const keluarga = await createKeluarga(input);
+  try {
+    const keluarga = await createKeluarga(input);
 
-  return response.status(201).json({ data: keluarga });
+    return response.status(201).json({ data: keluarga });
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      return response.status(409).json({
+        message: 'Nomor KK tersebut sudah digunakan oleh keluarga lain.'
+      });
+    }
+
+    console.error('Create keluarga error:', error);
+
+    return response.status(500).json({
+      message: 'Terjadi kesalahan pada server.'
+    });
+  }
 });
 
 keluargaRouter.put('/:id', async (request, response) => {
@@ -114,15 +143,29 @@ keluargaRouter.put('/:id', async (request, response) => {
     });
   }
 
-  const keluarga = await updateKeluarga(idKeluarga, input);
+  try {
+    const keluarga = await updateKeluarga(idKeluarga, input);
 
-  if (!keluarga) {
-    return response.status(404).json({
-      message: 'Data keluarga tidak ditemukan.'
+    if (!keluarga) {
+      return response.status(404).json({
+        message: 'Data keluarga tidak ditemukan.'
+      });
+    }
+
+    return response.status(200).json({ data: keluarga });
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      return response.status(409).json({
+        message: 'Nomor KK tersebut sudah digunakan oleh keluarga lain.'
+      });
+    }
+
+    console.error('Update keluarga error:', error);
+
+    return response.status(500).json({
+      message: 'Terjadi kesalahan pada server.'
     });
   }
-
-  return response.status(200).json({ data: keluarga });
 });
 
 keluargaRouter.delete('/:id', async (request, response) => {

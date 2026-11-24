@@ -1,11 +1,13 @@
 import { pool } from '../../database/pool.js';
 
 export type JenisKelamin = 'LAKI_LAKI' | 'PEREMPUAN';
+export type HubunganKeluarga = 'KEPALA_KELUARGA' | 'PASANGAN' | 'ANAK' | 'ANAK_ANGKAT' | 'ANGGOTA_LAIN';
 
 export type Jemaat = {
   idJemaat: number;
-  idKeluarga: number;
-  namaKeluarga: string;
+  idKeluarga: number | null;
+  namaKeluarga: string | null;
+  hubunganKeluarga: HubunganKeluarga | null;
   namaLengkap: string;
   jenisKelamin: JenisKelamin;
   tanggalLahir: string;
@@ -17,7 +19,8 @@ export type Jemaat = {
 };
 
 export type JemaatInput = {
-  idKeluarga: number;
+  idKeluarga: number | null;
+  hubunganKeluarga: HubunganKeluarga | null;
   namaLengkap: string;
   jenisKelamin: JenisKelamin;
   tanggalLahir: string;
@@ -33,6 +36,7 @@ export async function getAllJemaat(search = ''): Promise<Jemaat[]> {
         j.id_jemaat AS "idJemaat",
         j.id_keluarga AS "idKeluarga",
         k.nama_keluarga AS "namaKeluarga",
+        j.hubungan_keluarga AS "hubunganKeluarga",
         j.nama_lengkap AS "namaLengkap",
         j.jenis_kelamin AS "jenisKelamin",
         j.tanggal_lahir AS "tanggalLahir",
@@ -42,7 +46,7 @@ export async function getAllJemaat(search = ''): Promise<Jemaat[]> {
         j.created_at AS "createdAt",
         j.updated_at AS "updatedAt"
       FROM jemaat j
-      INNER JOIN keluarga k ON k.id_keluarga = j.id_keluarga
+      LEFT JOIN keluarga k ON k.id_keluarga = j.id_keluarga
       WHERE j.nama_lengkap ILIKE $1
       ORDER BY j.nama_lengkap ASC
     `,
@@ -61,6 +65,7 @@ export async function getJemaatById(
         j.id_jemaat AS "idJemaat",
         j.id_keluarga AS "idKeluarga",
         k.nama_keluarga AS "namaKeluarga",
+        j.hubungan_keluarga AS "hubunganKeluarga",
         j.nama_lengkap AS "namaLengkap",
         j.jenis_kelamin AS "jenisKelamin",
         j.tanggal_lahir AS "tanggalLahir",
@@ -70,7 +75,7 @@ export async function getJemaatById(
         j.created_at AS "createdAt",
         j.updated_at AS "updatedAt"
       FROM jemaat j
-      INNER JOIN keluarga k ON k.id_keluarga = j.id_keluarga
+      LEFT JOIN keluarga k ON k.id_keluarga = j.id_keluarga
       WHERE j.id_jemaat = $1
     `,
     [idJemaat]
@@ -84,6 +89,7 @@ export async function createJemaat(input: JemaatInput): Promise<Jemaat> {
     `
       INSERT INTO jemaat (
         id_keluarga,
+        hubungan_keluarga,
         nama_lengkap,
         jenis_kelamin,
         tanggal_lahir,
@@ -91,11 +97,12 @@ export async function createJemaat(input: JemaatInput): Promise<Jemaat> {
         telepon,
         status_jemaat
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING id_jemaat AS "idJemaat"
     `,
     [
       input.idKeluarga,
+      input.hubunganKeluarga,
       input.namaLengkap,
       input.jenisKelamin,
       input.tanggalLahir,
@@ -123,12 +130,13 @@ export async function updateJemaat(
       UPDATE jemaat
       SET
         id_keluarga = $2,
-        nama_lengkap = $3,
-        jenis_kelamin = $4,
-        tanggal_lahir = $5,
-        alamat = $6,
-        telepon = $7,
-        status_jemaat = $8,
+        hubungan_keluarga = $3,
+        nama_lengkap = $4,
+        jenis_kelamin = $5,
+        tanggal_lahir = $6,
+        alamat = $7,
+        telepon = $8,
+        status_jemaat = $9,
         updated_at = CURRENT_TIMESTAMP
       WHERE id_jemaat = $1
       RETURNING id_jemaat AS "idJemaat"
@@ -136,6 +144,7 @@ export async function updateJemaat(
     [
       idJemaat,
       input.idKeluarga,
+      input.hubunganKeluarga,
       input.namaLengkap,
       input.jenisKelamin,
       input.tanggalLahir,

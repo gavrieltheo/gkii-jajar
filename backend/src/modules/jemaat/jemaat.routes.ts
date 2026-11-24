@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { JemaatInput, JenisKelamin } from './jemaat.service.js';
+import type { HubunganKeluarga, JemaatInput, JenisKelamin } from './jemaat.service.js';
 import {
   createJemaat,
   deleteJemaat,
@@ -38,7 +38,12 @@ function readJemaatInput(body: unknown): JemaatInput | null {
 
   const data = body as Record<string, unknown>;
 
-  const idKeluarga = Number(data.idKeluarga);
+  const idKeluarga = data.idKeluarga === null || data.idKeluarga === undefined || data.idKeluarga === ''
+    ? null
+    : Number(data.idKeluarga);
+  const hubunganKeluarga = data.hubunganKeluarga === null || data.hubunganKeluarga === undefined || data.hubunganKeluarga === ''
+    ? null
+    : data.hubunganKeluarga;
   const namaLengkap =
     typeof data.namaLengkap === 'string'
       ? data.namaLengkap.trim()
@@ -55,8 +60,10 @@ function readJemaatInput(body: unknown): JemaatInput | null {
       : '';
 
   if (
-    !Number.isInteger(idKeluarga) ||
-    idKeluarga <= 0 ||
+    (idKeluarga !== null && (!Number.isInteger(idKeluarga) || idKeluarga <= 0)) ||
+    (hubunganKeluarga !== null && !['KEPALA_KELUARGA', 'PASANGAN', 'ANAK', 'ANAK_ANGKAT', 'ANGGOTA_LAIN'].includes(hubunganKeluarga as string)) ||
+    (idKeluarga === null && hubunganKeluarga !== null) ||
+    (idKeluarga !== null && hubunganKeluarga === null) ||
     !namaLengkap ||
     (jenisKelamin !== 'LAKI_LAKI' && jenisKelamin !== 'PEREMPUAN') ||
     typeof tanggalLahir !== 'string' ||
@@ -79,6 +86,7 @@ function readJemaatInput(body: unknown): JemaatInput | null {
 
   return {
     idKeluarga,
+    hubunganKeluarga: hubunganKeluarga as HubunganKeluarga | null,
     namaLengkap,
     jenisKelamin: jenisKelamin as JenisKelamin,
     tanggalLahir,

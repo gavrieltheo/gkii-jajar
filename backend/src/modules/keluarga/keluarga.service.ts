@@ -3,6 +3,7 @@ import { pool } from '../../database/pool.js';
 export type Keluarga = {
   idKeluarga: number;
   namaKeluarga: string;
+  nomorKk: string | null;
   alamat: string;
   telepon: string | null;
   createdAt: Date;
@@ -11,6 +12,7 @@ export type Keluarga = {
 
 export type KeluargaInput = {
   namaKeluarga: string;
+  nomorKk: string | null;
   alamat: string;
   telepon: string | null;
 };
@@ -23,6 +25,7 @@ export async function getAllKeluarga(
       SELECT
         id_keluarga AS "idKeluarga",
         nama_keluarga AS "namaKeluarga",
+        nomor_kk AS "nomorKk",
         alamat,
         telepon,
         created_at AS "createdAt",
@@ -45,6 +48,7 @@ export async function getKeluargaById(
       SELECT
         id_keluarga AS "idKeluarga",
         nama_keluarga AS "namaKeluarga",
+        nomor_kk AS "nomorKk",
         alamat,
         telepon,
         created_at AS "createdAt",
@@ -63,17 +67,18 @@ export async function createKeluarga(
 ): Promise<Keluarga> {
   const result = await pool.query<Keluarga>(
     `
-      INSERT INTO keluarga (nama_keluarga, alamat, telepon)
-      VALUES ($1, $2, $3)
+      INSERT INTO keluarga (nama_keluarga, nomor_kk, alamat, telepon)
+      VALUES ($1, $2, $3, $4)
       RETURNING
         id_keluarga AS "idKeluarga",
         nama_keluarga AS "namaKeluarga",
+        nomor_kk AS "nomorKk",
         alamat,
         telepon,
         created_at AS "createdAt",
         updated_at AS "updatedAt"
     `,
-    [input.namaKeluarga, input.alamat, input.telepon]
+    [input.namaKeluarga, input.nomorKk, input.alamat, input.telepon]
   );
 
   return result.rows[0];
@@ -88,19 +93,21 @@ export async function updateKeluarga(
       UPDATE keluarga
       SET
         nama_keluarga = $2,
-        alamat = $3,
-        telepon = $4,
+        nomor_kk = $3,
+        alamat = $4,
+        telepon = $5,
         updated_at = CURRENT_TIMESTAMP
       WHERE id_keluarga = $1
       RETURNING
         id_keluarga AS "idKeluarga",
         nama_keluarga AS "namaKeluarga",
+        nomor_kk AS "nomorKk",
         alamat,
         telepon,
         created_at AS "createdAt",
         updated_at AS "updatedAt"
     `,
-    [idKeluarga, input.namaKeluarga, input.alamat, input.telepon]
+    [idKeluarga, input.namaKeluarga, input.nomorKk, input.alamat, input.telepon]
   );
 
   return result.rows[0] ?? null;
