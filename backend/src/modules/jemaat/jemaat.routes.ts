@@ -1,5 +1,13 @@
 import { Router } from 'express';
-import type { HubunganKeluarga, JemaatInput, JenisKelamin } from './jemaat.service.js';
+import type {
+  GolonganDarah,
+  HubunganKeluarga,
+  JemaatInput,
+  JenisKelamin,
+  StatusBaptis,
+  StatusJemaat,
+  StatusPernikahan
+} from './jemaat.service.js';
 import {
   createJemaat,
   deleteJemaat,
@@ -48,8 +56,11 @@ function readJemaatInput(body: unknown): JemaatInput | null {
     typeof data.namaLengkap === 'string'
       ? data.namaLengkap.trim()
       : '';
+  const nik = readOptionalText(data.nik);
   const jenisKelamin = data.jenisKelamin;
+  const tempatLahir = readOptionalText(data.tempatLahir);
   const tanggalLahir = data.tanggalLahir;
+  const golonganDarah = data.golonganDarah;
   const alamat =
     typeof data.alamat === 'string'
       ? data.alamat.trim()
@@ -58,6 +69,10 @@ function readJemaatInput(body: unknown): JemaatInput | null {
     typeof data.statusJemaat === 'string'
       ? data.statusJemaat.trim()
       : '';
+  const statusPernikahan = data.statusPernikahan;
+  const statusBaptis = data.statusBaptis;
+  const pekerjaan = readOptionalText(data.pekerjaan);
+  const kewarganegaraan = readOptionalText(data.kewarganegaraan);
 
   if (
     (idKeluarga !== null && (!Number.isInteger(idKeluarga) || idKeluarga <= 0)) ||
@@ -65,11 +80,19 @@ function readJemaatInput(body: unknown): JemaatInput | null {
     (idKeluarga === null && hubunganKeluarga !== null) ||
     (idKeluarga !== null && hubunganKeluarga === null) ||
     !namaLengkap ||
+    nik === undefined ||
+    (nik !== null && !/^\d{16}$/.test(nik)) ||
     (jenisKelamin !== 'LAKI_LAKI' && jenisKelamin !== 'PEREMPUAN') ||
+    tempatLahir === undefined ||
     typeof tanggalLahir !== 'string' ||
     !isValidDate(tanggalLahir) ||
+    (golonganDarah !== null && golonganDarah !== undefined && !['A', 'B', 'AB', 'O', 'TIDAK_TAHU'].includes(golonganDarah as string)) ||
     !alamat ||
-    !statusJemaat
+    (statusPernikahan !== null && statusPernikahan !== undefined && !['BELUM_MENIKAH', 'MENIKAH', 'CERAI_HIDUP', 'CERAI_MATI'].includes(statusPernikahan as string)) ||
+    (statusBaptis !== null && statusBaptis !== undefined && !['BELUM_BAPTIS', 'SUDAH_BAPTIS'].includes(statusBaptis as string)) ||
+    pekerjaan === undefined ||
+    kewarganegaraan === undefined ||
+    (statusJemaat !== 'AKTIF' && statusJemaat !== 'TIDAK_AKTIF')
   ) {
     return null;
   }
@@ -88,12 +111,27 @@ function readJemaatInput(body: unknown): JemaatInput | null {
     idKeluarga,
     hubunganKeluarga: hubunganKeluarga as HubunganKeluarga | null,
     namaLengkap,
+    nik,
     jenisKelamin: jenisKelamin as JenisKelamin,
+    tempatLahir,
     tanggalLahir,
+    golonganDarah: (golonganDarah ?? null) as GolonganDarah | null,
     alamat,
     telepon,
-    statusJemaat
+    statusPernikahan: (statusPernikahan ?? null) as StatusPernikahan | null,
+    statusBaptis: (statusBaptis ?? null) as StatusBaptis | null,
+    pekerjaan,
+    kewarganegaraan,
+    statusJemaat: statusJemaat as StatusJemaat
   };
+}
+
+function readOptionalText(value: unknown): string | null | undefined {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  return typeof value === 'string' ? value.trim() || null : undefined;
 }
 
 function isForeignKeyViolation(error: unknown): boolean {
@@ -102,6 +140,15 @@ function isForeignKeyViolation(error: unknown): boolean {
     error !== null &&
     'code' in error &&
     (error as { code?: string }).code === '23503'
+  );
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: string }).code === '23505'
   );
 }
 
@@ -150,6 +197,12 @@ jemaatRouter.post('/', async (request, response) => {
 
     return response.status(201).json({ data: jemaat });
   } catch (error) {
+    if (isUniqueViolation(error)) {
+      return response.status(409).json({
+        message: 'NIK tersebut sudah digunakan oleh jemaat lain.'
+      });
+    }
+
     if (isForeignKeyViolation(error)) {
       return response.status(400).json({
         message: 'Keluarga yang dipilih tidak ditemukan.'
@@ -185,6 +238,12 @@ jemaatRouter.put('/:id', async (request, response) => {
 
     return response.status(200).json({ data: jemaat });
   } catch (error) {
+    if (isUniqueViolation(error)) {
+      return response.status(409).json({
+        message: 'NIK tersebut sudah digunakan oleh jemaat lain.'
+      });
+    }
+
     if (isForeignKeyViolation(error)) {
       return response.status(400).json({
         message: 'Keluarga yang dipilih tidak ditemukan.'
