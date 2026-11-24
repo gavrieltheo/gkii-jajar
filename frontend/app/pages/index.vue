@@ -95,15 +95,17 @@ function jadwalBerikutnya() {
   tampilkanJadwal((indeksJadwalAktif.value + 1) % jadwalUntukHero.value.length, false)
 }
 
+function jadwalSebelumnya() {
+  if (!jadwalUntukHero.value.length) return
+  tampilkanJadwal(
+    (indeksJadwalAktif.value - 1 + jadwalUntukHero.value.length) % jadwalUntukHero.value.length
+  )
+}
+
 function mulaiCarousel() {
   hentikanCarousel()
   if (carouselDijeda.value || jadwalUntukHero.value.length < 2) return
   carouselTimer = setInterval(jadwalBerikutnya, 8000)
-}
-
-function toggleCarousel() {
-  carouselDijeda.value = !carouselDijeda.value
-  mulaiCarousel()
 }
 
 watch(jadwalUntukHero, (jadwal) => {
@@ -155,7 +157,13 @@ useHead({ title: 'GKII Jajar Solo' })
             </p>
           </div>
 
-          <article class="next-worship" aria-labelledby="judul-jadwal-hero">
+          <article
+            class="next-worship"
+            aria-labelledby="judul-jadwal-hero"
+            @mouseenter="hentikanCarousel"
+            @mouseleave="mulaiCarousel"
+            @focusin="carouselDijeda = true; hentikanCarousel()"
+          >
             <p class="kicker">Jadwal ibadah</p>
             <template v-if="jadwalPending">
               <h2 id="judul-jadwal-hero">Memuat jadwal ibadah...</h2>
@@ -171,21 +179,24 @@ useHead({ title: 'GKII Jajar Solo' })
                 </div>
               </Transition>
               <div v-if="jadwalUntukHero.length > 1" class="schedule-controls">
-                <div class="schedule-dots" aria-label="Pilih jadwal ibadah">
-                  <button
-                    v-for="(jadwal, indeks) in jadwalUntukHero"
-                    :key="jadwal.idJadwal"
-                    type="button"
-                    class="schedule-dot"
-                    :class="{ active: indeks === indeksJadwalAktif }"
-                    :aria-label="`Tampilkan ${jadwal.judul}`"
-                    :aria-pressed="indeks === indeksJadwalAktif"
-                    @click="tampilkanJadwal(indeks)"
-                  />
+                <div class="schedule-progress" aria-live="polite">
+                  <span class="schedule-count">{{ String(indeksJadwalAktif + 1).padStart(2, '0') }} / {{ String(jadwalUntukHero.length).padStart(2, '0') }}</span>
+                  <div class="schedule-lines" aria-hidden="true">
+                    <span
+                      v-for="jadwal in jadwalUntukHero"
+                      :key="jadwal.idJadwal"
+                      :class="{ active: jadwal.idJadwal === jadwalAktif.idJadwal }"
+                    />
+                  </div>
                 </div>
-                <button type="button" class="carousel-toggle" :aria-pressed="carouselDijeda" @click="toggleCarousel">
-                  {{ carouselDijeda ? 'Putar otomatis' : 'Jeda otomatis' }}
-                </button>
+                <div class="carousel-arrows">
+                  <button type="button" aria-label="Tampilkan jadwal sebelumnya" @click="jadwalSebelumnya">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                  </button>
+                  <button type="button" aria-label="Tampilkan jadwal berikutnya" @click="tampilkanJadwal((indeksJadwalAktif + 1) % jadwalUntukHero.length)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </button>
+                </div>
               </div>
             </template>
             <template v-else>
@@ -339,7 +350,7 @@ useHead({ title: 'GKII Jajar Solo' })
 .hero-intro { color: #e2eee4; font-size: 1.15rem; max-width: 36rem; }
 .next-worship { border-top: 3px solid var(--site-rust); padding: 2rem 0 0; }
 .next-worship h2 { font-family: var(--site-display); font-size: clamp(2rem, 3vw, 3rem); font-weight: 500; line-height: 1.1; }
-.schedule-slide-content { min-height: 13rem; }.schedule-status { color: #d5e5d8; font-size: 0.9rem; font-weight: 700; margin: 0 0 1.15rem; }.worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }.schedule-controls { align-items: center; display: flex; gap: 1rem; margin: 0 0 1.25rem; }.schedule-dots { display: flex; gap: 0.35rem; }.schedule-dot { background: rgb(255 255 255 / 38%); border: 0; border-radius: 999px; height: 0.55rem; padding: 0; transition: background-color 160ms ease, transform 160ms ease; width: 0.55rem; }.schedule-dot.active { background: white; transform: scale(1.15); }.carousel-toggle { background: transparent; border: 0; color: #d5e5d8; font-size: 0.9rem; font-weight: 700; padding: 0.6rem 0; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25rem; }.schedule-slide-enter-active, .schedule-slide-leave-active { transition: opacity 250ms ease, transform 250ms ease; }.schedule-slide-enter-from { opacity: 0; transform: translateX(1rem); }.schedule-slide-leave-to { opacity: 0; transform: translateX(-1rem); }
+.schedule-slide-content { min-height: 13rem; }.schedule-status { color: #d5e5d8; font-size: 0.9rem; font-weight: 700; margin: 0 0 1.15rem; }.worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }.schedule-controls { align-items: center; display: flex; justify-content: space-between; margin: 0 0 1.25rem; }.schedule-progress { align-items: center; display: flex; gap: 1.25rem; }.schedule-count { color: #d5e5d8; font-size: 0.82rem; font-variant-numeric: tabular-nums; letter-spacing: 0.08em; white-space: nowrap; }.schedule-lines { display: flex; gap: 0.35rem; }.schedule-lines span { background: rgb(255 255 255 / 35%); display: block; height: 1px; transition: background-color 160ms ease; width: 2.4rem; }.schedule-lines span.active { background: white; }.carousel-arrows { display: flex; gap: 0.65rem; }.carousel-arrows button { align-items: center; background: transparent; border: 1px solid rgb(255 255 255 / 58%); border-radius: 50%; color: white; display: inline-flex; height: 2.85rem; justify-content: center; padding: 0; transition: background-color 160ms ease, border-color 160ms ease; width: 2.85rem; }.carousel-arrows button:hover { background: rgb(255 255 255 / 12%); border-color: white; }.carousel-arrows svg { fill: none; height: 1.05rem; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; width: 1.05rem; }.schedule-slide-enter-active, .schedule-slide-leave-active { transition: opacity 250ms ease, transform 250ms ease; }.schedule-slide-enter-from { opacity: 0; transform: translateX(1rem); }.schedule-slide-leave-to { opacity: 0; transform: translateX(-1rem); }
 .hero-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }.text-action { color: inherit; font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 0.25rem; }.btn.disabled { cursor: not-allowed; opacity: 0.65; pointer-events: none; }
 .section-space { padding: clamp(4rem, 8vw, 7rem) 0; }.display-heading { color: var(--site-ink); font-size: clamp(2.25rem, 4vw, 4rem); max-width: 15ch; }.section-copy { color: var(--site-muted); font-size: 1.1rem; max-width: 34rem; }
 .sinode-section { border-top: 1px solid var(--site-line); }.sinode-layout { display: grid; gap: clamp(2rem, 7vw, 7rem); grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr); }.sinode-copy { border-top: 3px solid var(--site-rust); color: var(--site-muted); font-size: 1.1rem; padding-top: 1.5rem; }.sinode-copy p { max-width: 34rem; }
