@@ -155,6 +155,7 @@ useHead({ title: 'GKII Jajar Solo' })
               GKII Jajar Solo adalah bagian dari {{ sinode.nama }}. Datang beribadah,
               berjumpa dengan komunitas, dan temukan ruang untuk melayani bersama.
             </p>
+            <p class="hero-photo-note">Foto ilustrasi sementara — akan diganti dengan foto GKII Jajar Solo.</p>
           </div>
 
           <article
@@ -341,13 +342,13 @@ useHead({ title: 'GKII Jajar Solo' })
 
 <style scoped>
 .homepage { background: var(--site-paper); color: var(--site-ink); }
-.arrival-hero { background: var(--site-green); color: white; padding: clamp(4rem, 9vw, 7.5rem) 0; }
+.arrival-hero { background: linear-gradient(90deg, rgb(35 71 61 / 96%) 0%, rgb(35 71 61 / 90%) 47%, rgb(35 71 61 / 64%) 100%), url('/images/church-hero-placeholder.png') center / cover no-repeat; color: white; padding: clamp(4rem, 9vw, 7.5rem) 0; }
 .hero-layout { align-items: center; display: grid; gap: clamp(2.5rem, 7vw, 7rem); grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr); }
 .kicker { color: var(--site-rust); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 1rem; text-transform: none; }
 .arrival-hero .kicker { color: #d5e5d8; }
 .hero-copy-wrap h1, .display-heading { font-family: var(--site-display); font-weight: 500; letter-spacing: -0.035em; line-height: 1.1; }
 .hero-copy-wrap h1 { font-size: clamp(2.75rem, 6vw, 5.4rem); max-width: 12ch; }
-.hero-intro { color: #e2eee4; font-size: 1.15rem; max-width: 36rem; }
+.hero-intro { color: #e2eee4; font-size: 1.15rem; max-width: 36rem; }.hero-photo-note { color: rgb(226 238 228 / 70%); font-size: 0.78rem; margin: 1.5rem 0 0; max-width: 32rem; }
 .next-worship { border-top: 3px solid var(--site-rust); padding: 2rem 0 0; }
 .next-worship h2 { font-family: var(--site-display); font-size: clamp(2rem, 3vw, 3rem); font-weight: 500; line-height: 1.1; }
 .schedule-slide-content { min-height: 13rem; }.schedule-status { color: #d5e5d8; font-size: 0.9rem; font-weight: 700; margin: 0 0 1.15rem; }.worship-day { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }.worship-time { font-size: 1.4rem; font-weight: 700; margin: 1.25rem 0 0.2rem; }.worship-place { color: #d5e5d8; margin-bottom: 1.5rem; }.schedule-controls { align-items: center; display: flex; justify-content: space-between; margin: 0 0 1.25rem; }.schedule-progress { align-items: center; display: flex; gap: 1.25rem; }.schedule-count { color: #d5e5d8; font-size: 0.82rem; font-variant-numeric: tabular-nums; letter-spacing: 0.08em; white-space: nowrap; }.schedule-lines { display: flex; gap: 0.35rem; }.schedule-lines span { background: rgb(255 255 255 / 35%); display: block; height: 1px; transition: background-color 160ms ease; width: 2.4rem; }.schedule-lines span.active { background: white; }.carousel-arrows { display: flex; gap: 0.65rem; }.carousel-arrows button { align-items: center; background: transparent; border: 1px solid rgb(255 255 255 / 58%); border-radius: 50%; color: white; display: inline-flex; height: 2.85rem; justify-content: center; padding: 0; transition: background-color 160ms ease, border-color 160ms ease; width: 2.85rem; }.carousel-arrows button:hover { background: rgb(255 255 255 / 12%); border-color: white; }.carousel-arrows svg { fill: none; height: 1.05rem; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; width: 1.05rem; }.schedule-slide-enter-active, .schedule-slide-leave-active { transition: opacity 250ms ease, transform 250ms ease; }.schedule-slide-enter-from { opacity: 0; transform: translateX(1rem); }.schedule-slide-leave-to { opacity: 0; transform: translateX(-1rem); }
